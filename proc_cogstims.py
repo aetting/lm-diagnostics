@@ -738,7 +738,7 @@ def run_rr_all(args,out,models,logcode,klist,clozedict,inputlist,tgtlist,clozeli
     return report,n4report
 
 
-def run_neg_all(args,out,models,klist,inputlist_fs,fsdict,tgtlist_fs,bert=True):
+def run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,bert=True):
 
     for modelname,model,tokenizer in models:
         out.write('\n\n***\nMODEL: %s\n***\n'%modelname)
@@ -747,7 +747,7 @@ def run_neg_all(args,out,models,klist,inputlist_fs,fsdict,tgtlist_fs,bert=True):
         for k in klist:
             with open(args.resultsdir+'/FS_predlog_%s-%s'%(modelname,k),'wb') as fslog:
                 print('FISCHLER k=%s\n'%k)
-                report,n4report,corr,oov_list = test_nkf_acc(fsdict,inputlist_fs,tgtlist_fs,model,tokenizer,fslog,k=k,bert=bert)
+                report,n4report,corr,oov_list = test_nkf_acc(negdict,inputlist,tgtlist,model,tokenizer,fslog,k=k,bert=bert)
                 # n4report = sim_nkf_N400(fsdict,inputlist,tgtlist,model,tokenizer,fslog,k=k,bert=bert)
                 for crritem in corr:
                     fslog.write(str(crritem) + '\n')
@@ -762,24 +762,24 @@ def run_neg_all(args,out,models,klist,inputlist_fs,fsdict,tgtlist_fs,bert=True):
         # for w in oov_list:
         #     out.write(w + '\n')
 
-        reports = []
-        for k in klist:
-            with open(args.resultsdir+'/NK_predlog_%s-%s'%(modelname,k),'wb') as nklog:
-                print('NIEUWLAND k=%s\n'%k)
-                report,n4report,corr,oov_list = test_nkf_acc(nkdict,inputlist_nk,tgtlist_nk,model,tokenizer,nklog,k=k,bert=bert)
-                # n4report = sim_nkf_N400(nkdict,inputlist,tgtlist,model,tokenizer,nklog,bert=bert)
-                for crritem in corr:
-                    nklog.write(str(crritem) + '\n')
-                reports.append((report,n4report,k))
-        for acc,n4,k in reports:
-            out.write('NIEUWLAND k=%s acc\n'%k)
-            out.write(acc)
-        out.write('\nNIEUWLAND N400\n')
-        out.write(n4)
-        out.write('\n----\n\n')
-        # out.write('OOV\n')
-        # for w in oov_list:
-        #     out.write(w + '\n')
+        # reports = []
+        # for k in klist:
+        #     with open(args.resultsdir+'/NK_predlog_%s-%s'%(modelname,k),'wb') as nklog:
+        #         print('NIEUWLAND k=%s\n'%k)
+        #         report,n4report,corr,oov_list = test_nkf_acc(nkdict,inputlist_nk,tgtlist_nk,model,tokenizer,nklog,k=k,bert=bert)
+        #         # n4report = sim_nkf_N400(nkdict,inputlist,tgtlist,model,tokenizer,nklog,bert=bert)
+        #         for crritem in corr:
+        #             nklog.write(str(crritem) + '\n')
+        #         reports.append((report,n4report,k))
+        # for acc,n4,k in reports:
+        #     out.write('NIEUWLAND k=%s acc\n'%k)
+        #     out.write(acc)
+        # out.write('\nNIEUWLAND N400\n')
+        # out.write(n4)
+        # out.write('\n----\n\n')
+        # # out.write('OOV\n')
+        # # for w in oov_list:
+        # #     out.write(w + '\n')
 
 def run_weight_mixing():
     ftcode = args.ftcode
@@ -841,18 +841,19 @@ def run_aux_tests(args,models,klist,bert=True):
     #     run_neg_all(args,out,models,klist,bert=bert)
 
 #runs all three datasets without any perturbations from paper
-def run_three_orig(args,models,klist,tokenizer,bert=True):
+def run_three_orig(args,models,klist,bert=True):
     with open(args.resultsdir+'/results-neg.txt','wb') as out:
-        inputlist_fs,fsdict,tgtlist_fs = process_fischler(args.fisch_stim,tokenizer)
-        inputlist_nk,nkdict,tgtlist_nk = process_nk(args.nk_stim,tokenizer)
-        # run_neg_all(args,out,models,klist,inputlist_fs,fsdict,tgtlist_fs,bert=bert)
+        inputlist,negdict,tgtlist = process_fischler(args.fisch_stim)
+        run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,bert=bert)
+        inputlist,negdict,tgtlist = process_nk(args.nk_stim)
+        run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,bert=bert)
 
     with open(args.resultsdir+'/results-rr.txt','wb') as out:
-        clozedict,inputlist,tgtlist,clozelist = process_rr(args.rr_stim,tokenizer,gen_obj=False,gen_subj=False)
+        clozedict,inputlist,tgtlist,clozelist = process_rr(args.rr_stim,gen_obj=False,gen_subj=False)
         # run_rr_all(args,out,models,'orig',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
 
     with open(args.resultsdir+'/results-fk.txt','wb') as out:
-        hldict,inputlist,_,_,_,tgtlist = process_fk(args.fk_stim,tokenizer)
+        hldict,inputlist,_,_,_,tgtlist = process_fk(args.fk_stim)
     #     _,_,outstring = run_fk_all(args,out,models,'orig',klist,hldict,inputlist,tgtlist,bert=bert)
     #     out.write(outstring)
 
@@ -891,7 +892,7 @@ if __name__ == "__main__":
     models = []
 
     print('RUNNING EXPERIMENTS')
-    run_three_orig(args,models,klist,tokenizer_base,bert=True)
+    run_three_orig(args,models,klist,bert=True)
     # run_aux_tests(args,models,klist,bert=True)
 
     # modelnames = ['bert-base-uncased','bert-large-uncased']
