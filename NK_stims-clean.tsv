@@ -1,0 +1,17 @@
+item	context_pos	context_neg	target_pos	target_neg	licensing
+0	With proper equipment, scuba-diving is very	With proper equipment, scuba-diving isn't very	safe	dangerous	Y
+1	Traveling in Baghdad is very	Traveling in Baghdad isn't very	dangerous	safe	Y
+2	In moderation, drinking red wine is	In moderation, drinking red wine isn't	good	bad	Y
+3	Drinking tap water in developing countries is very	Drinking tap water in developing countries isn't very	dangerous	safe	Y
+4	Secondhand furniture is very	Secondhand furniture isn't very	cheap	expensive	Y
+5	Most smokers find that quitting is very	Most smokers find that quitting isn't very	difficult	easy	Y
+6	Old computers may be	Old computers may not be	slow	fast	Y
+7	A fast food dinner on a first date is very	A fast food dinner on a first date isn't very	lame	romantic	Y
+8	Bulletproof vests are very	Bulletproof vests aren't very	safe	dangerous	N
+9	Terrorist bomb attacks are really	Terrorist bomb attacks aren't really	dangerous	safe	N
+10	Vitamins and proteins are very	Vitamins and proteins aren't very	good	bad	N
+11	Using strong suntan lotion is	Using strong suntan lotion isn't	safe	dangerous	N
+12	Rockets and missiles are very	Rockets and missiles aren't very	fast	slow	N
+13	Keeping the door open for somebody is very	Keeping the door open for somebody isn't very	polite	rude	N
+14	A baby bunny's fur is very	A baby bunny's fur isn't very	soft	hard	N
+15	Businessman Donald Trump is really	Businessman Donald Trump isn't really	rich	poor	N

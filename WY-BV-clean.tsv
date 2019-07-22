@@ -1,0 +1,89 @@
+item	context	expected	exp_cloze	target	tgt_cloze	tgt_cloze(strict)
+61-b	The librarian documented which journalist the celebrities had 	avoided|hated|read|met	0.066666667	interviewed	0.066666667	0
+61-a	The librarian documented which celebrities the journalist had 	interviewed	0.533333333	interviewed	0.533333333	0.533333333
+62-b	the old widower remembered which ghost the villager had 	seen	0.6	haunted	0	0
+62-a	the old widower remembered which villager the ghost had 	haunted	0.5	haunted	0.5	0.5
+63-b	the firefighter reported which paramedic the victim had 	thanked	0.2	saved	0.166666667	0
+63-a	the firefighter reported which victim the paramedic had 	saved	0.433333333	saved	0.433333333	0.433333333
+64-b	the historian documented which assassin the prince had 	hired	0.2	killed	0.133333333	0
+64-a	the historian documented which prince the assassin had 	killed	0.466666667	killed	0.466666667	0.466666667
+66-b	the judo master recognized which assailant the defender had 	defeated|beaten	0.1	attacked	0.166666667	0
+66-a	the judo master recognized which defender the assailant had 	attacked	0.4	attacked	0.4	0.4
+67-b	the naturalist observed which deer the predators had 	eaten|killed	0.233333333	avoided	0	0
+67-a	the naturalist observed which predators the deer had 	avoided	0.4	avoided	0.4	0.4
+68-b	the restaurant owner forgot which waitress the customer had 	tipped	0.266666667	served	0.033333333	0
+68-a	the restaurant owner forgot which customer the waitress had 	served	0.366666667	served	0.366666667	0.366666667
+71-b	the nanny knew which billionaire the housekeeper had 	worked for	0.333333333	hired	0	0
+71-a	the nanny knew which housekeeper the billionaire had 	hired	0.333333333	hired	0.333333333	0.333333333
+72-b	the researcher learned which biologist the whale had 	eaten	0.166666667	studied	0.066666667	0
+72-a	the researcher learned which whale the biologist had 	studied	0.433333333	studied	0.433333333	0.433333333
+73-b	Tracy announced which administrator the applicant had 	interviewed with|seen	0.1	chosen	0	0
+73-a	Tracy announced which applicant the administrator had 	chosen	0.333333333	chosen	0.333333333	0.333333333
+74-b	the birthday boy saw which clown the friend had 	hired	0.233333333	scared	0.2	0
+74-a	the birthday boy saw which friend the clown had 	scared	0.3	scared	0.3	0.3
+75-b	the columnist publicized which celebrity the photographer had 	photographed	0.366666667	punched	0.033333333	0
+75-a	the columnist publicized which photographer the celebrity had 	punched	0.3	punched	0.3	0.3
+77-b	the police officer noted which burglar the jeweler had 	identified	0.3	robbed	0.066666667	0
+77-a	the police officer noted which jeweler the burglar had 	robbed	0.3	robbed	0.3	0.3
+78-b	the royal cook asked which chef the lord had 	requested|chosen|hired	0.166666667	served	0	0
+78-a	the royal cook asked which lord the chef had 	served	0.3	served	0.3	0.3
+80-b	the wildlife curator mentioned which zookeeper the ape had 	attacked	0.266666667	fed	0	0
+80-a	the wildlife curator mentioned which ape the zookeeper had 	fed	0.333333333	fed	0.333333333	0.333333333
+81-b	the aid worker realized which philanthropist the refugees had 	thanked	0.133333333	helped	0.066666667	0
+81-a	the aid worker realized which refugees the philanthropist had 	helped	0.266666667	helped	0.266666667	0.266666667
+82-b	the camper reported which bear the girl had 	seen	0.266666667	eaten	0	0
+82-a	the camper reported which girl the bear had 	eaten	0.3	eaten	0.266666667	0.266666667
+83-b	the dance instructor noticed which performers the onlookers had 	admired|applauded	0.133333333	impressed	0.033333333	0
+83-a	the dance instructor noticed which onlookers the performers had 	impressed	0.266666667	impressed	0.266666667	0.266666667
+87-b	the travel agent recorded which guests the innkeeper had 	checked in	0.133333333	liked	0	0
+87-a	the travel agent recorded which innkeeper the guests had 	liked	0.266666667	liked	0.266666667	0.266666667
+88-b	the bird watcher saw which hawk the photographer had 	photographed	0.433333333	attacked	0	0
+88-a	the bird watcher saw which photographer the hawk had 	attacked	0.233333333	attacked	0.233333333	0.233333333
+89-b	the costume designer confirmed which barber the actor had 	used	0.2	shaved	0.033333333	0
+89-a	the costume designer confirmed which actor the barber had 	shaved	0.233333333	shaved	0.233333333	0.233333333
+91-b	the investigator discovered which abductor the couple had 	identified	0.2	taken	0	0
+91-a	the investigator discovered which couple the abductor had 	taken	0.233333333	taken	0.233333333	0.233333333
+92-b	the jail keeper forgot which prisoner the guard had 	beaten	0.1	attacked	0.2	0
+92-a	the jail keeper forgot which guard the prisoner had 	attacked	0.233333333	attacked	0.233333333	0.233333333
+94-b	the sheriff recalled which gangsters the locals had 	feared	0.133333333	robbed	0	0
+94-a	the sheriff recalled which locals the gangsters had 	robbed	0.233333333	robbed	0.233333333	0.233333333
+95-b	the undead king recognized which zombie the woman had 	killed	0.266666667	bitten	0.033333333	0
+95-a	the undead king recognized which woman the zombie had 	eaten	0.3	bitten	0.233333333	0.233333333
+97-b	the broadcaster explained which judge the contestant had 	liked	0.133333333	disqualified	0	0
+97-a	the broadcaster explained which contestant the judge had 	chosen|disqualified	0.2	disqualified	0.2	0.2
+99-b	the family counselor understood which stepparent the daughter had 	disliked	0.2	abused	0.033333333	0
+99-a	the family counselor understood which daughter the stepparent had 	abused	0.2	abused	0.2	0.2
+100-b	the newscaster confirmed which policeman the fugitive had 	shot	0.333333333	arrested	0	0
+100-a	the newscaster confirmed which fugitive the policeman had 	captured	0.266666667	arrested	0.233333333	0.233333333
+101-b	the opera composer revealed which singer the pirate had 	kidnapped|murdered|killed	0.066666667	portrayed	0.033333333	0
+101-a	the opera composer revealed which pirate the singer had 	portrayed	0.2	portrayed	0.2	0.2
+102-b	the prison warden guessed which inmate the jailer had 	beaten	0.233333333	stabbed	0	0
+102-a	the prison warden guessed which jailer the inmate had 	stabbed	0.2	stabbed	0.2	0.2
+103-b	the producer observed which acrobats the viewers had 	liked	0.333333333	impressed	0.066666667	0
+103-a	the producer observed which viewers the acrobats had 	impressed	0.2	impressed	0.2	0.2
+104-b	the queen recognized which comedian the nobleman had 	liked	0.133333333	entertained	0	0
+104-a	the queen recognized which nobleman the comedian had 	entertained	0.2	entertained	0.2	0.2
+106-b	The ape researcher identified which poacher the chimpanzee had 	attacked	0.161290323	shot	0.033333333	0
+106-a	The ape researcher identified which chimpanzee the poacher had 	killed	0.366666667	shot	0.133333333	0.133333333
+108-b	the committee member guessed which president the advisors had 	chosen	0.166666667	appointed	0	0
+108-a	the committee member guessed which advisors the president had 	appointed	0.166666667	appointed	0.166666667	0.166666667
+109-b	the farmer indicated which townsperson the donkey had 	kicked	0.466666667	bought	0.033333333	0
+109-a	the farmer indicated which donkey the townsperson had 	stolen|ridden	0.2	bought	0.166666667	0.166666667
+110-b	the military man knew which general the soldiers had 	respected	0.166666667	promoted	0	0
+110-a	the military man knew which soldiers the general had 	promoted	0.166666667	promoted	0.166666667	0.166666667
+111-b	the parole officer confirmed which psychologist the delinquent had 	seen	0.233333333	treated	0	0
+111-a	the parole officer confirmed which delinquent the psychologist had 	seen	0.233333333	treated	0.166666667	0.166666667
+112-b	the policeman knew which detective the suspect had 	feared	0.133333333	arrested	0	0
+112-a	the policeman knew which suspect the detective had 	arrested	0.166666667	arrested	0.166666667	0.166666667
+114-b	Jack observed which conductor the passenger had 	talked to	0.1	removed	0	0
+114-a	Jack observed which passenger the conductor had 	removed|kicked off	0.133333333	removed	0.133333333	0.133333333
+115-b	Teresa knew which parrot the neighbor had 	bought	0.4	bitten	0	0
+115-a	Teresa knew which neighbor the parrot had 	bitten|mimicked	0.133333333	bitten	0.133333333	0.133333333
+116-b	the art critic identified which artist the model had 	posed for	0.4	drawn	0.066666667	0
+116-a	the art critic identified which model the artist had 	painted	0.366666667	drawn	0.566666667	0.2
+117-b	The cotton farmer wondered which slave the master had 	beaten	0.266666667	escaped	0	0
+117-a	The cotton farmer wondered which master the slave had 	killed	0.133333333	escaped	0.133333333	0.033333333
+118-b	the farmhand recorded which breeder the goats had 	come from|belonged to	0.133333333	sold	0	0
+118-a	the farmhand recorded which goats the breeder had 	bred	0.233333333	sold	0.133333333	0.133333333
+119-b	the four-year-old knew which dragon the hero had 	slain	0.766666667	eaten	0	0
+119-a	the four-year-old knew which hero the dragon had 	slain	0.333333333	eaten	0.133333333	0.133333333

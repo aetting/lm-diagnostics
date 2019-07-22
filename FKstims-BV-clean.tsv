@@ -1,0 +1,35 @@
+item	context_s1	context_s2	expected	within_category	between_category	constraint
+0	“Checkmate,” Rosaline announced with glee.	She was getting to be really good at	chess	monopoly	football	H
+1	Justin put a second house on Park Place.	He and his sister often spent hours playing	monopoly	chess	baseball	H
+2	He caught the pass and scored another touchdown.	There was nothing he enjoyed more than a good game of	football	baseball	monopoly	H
+3	Rich couldn’t count the number of Yankees games he had seen with his father.	They both shared a lifelong interest in	baseball	football	chess	H
+4	Getting both himself and his car to work on the neighboring island was time-consuming.	Every morning he drove for a few minutes and then boarded the	ferry	canoe	plane	L
+5	The patient was in critical condition and the ambulance wouldn’t be fast enough.	They decided they would have to use the	helicopter	plane	ferry	L
+6	Amy was very anxious about traveling abroad for the first time.	She felt surprisingly better, however, when she actually boarded the	plane	helicopter	canoe	L
+7	The day before the wedding, the kitchen was just covered with frosting.	Annette’s sister was responsible for making the	cake	cookies	toast	L
+8	The little girl was happy that Santa Claus left nothing but crumbs on the plate.	She decided he must have really enjoyed the	cookies	cake	pancakes	H
+9	He wanted to make his wife breakfast, but he burned piece after piece.	I couldn’t believe he was ruining even the	toast	pancakes	cookies	H
+10	She keeps twirling it around and around under her collar.	Stephanie seems really happy that Dan gave her that	necklace	bracelet	mascara	L
+11	She wanted to make her eyelashes look really black and thick.	So she asked to borrow her older friend’s	mascara	lipstick	necklace	H
+12	He complained that after she kissed him, he couldn’t get the red color off his face.	He finally just asked her to stop wearing that	lipstick	mascara	bracelet	H
+13	Eleanor offered to fix her visitor some coffee.	Then she realized she didn’t have a clean	cup	bowl	spoon	L
+14	My aunt fixed my brother some cereal using her best china.	Of course, the first thing he did was drop the	bowl	cup	knife	L
+15	At the dinner party, I wondered why my mother wasn’t eating her soup.	Then I noticed that she didn’t have a	spoon	knife	bowl	H
+16	In the dorms, cutting your steak can be a huge struggle.	They always give you such a poor quality	knife	spoon	cup	L
+17	He journeyed to the African plains, hoping to get a photograph of the king of the beasts.	Unfortunately, the whole time he was there he never saw a	lion	tiger	panda	H
+18	George was hiking in India when he saw the orange and black striped animal leap out at him.	He sustained serious injuries before he managed to kill the	tiger	lion	otter	L
+19	Wendy wondered how they had managed to ship such a large animal all the way from China.	She waited in line to see the newly acquired	panda	otter	tiger	L
+20	Barb loved the feel of the waves on her feet, but she hated to walk barefoot.	As a compromise, she usually wore a pair of	sandals	boots	shorts	H
+21	By the end of the day, the hiker’s feet were extremely cold and wet.	It was the last time he would ever buy a cheap pair of	boots	sandals	jeans	L
+22	Everyone agreed that the stone-washed kind were out of style.	But he continued to wear the same old pair of	jeans	shorts	sandals	H
+23	As the afternoon progressed, it became hotter and hotter.	Keith finally decided to put on a pair of	shorts	jeans	boots	L
+24	Pablo wanted to cut the lumber he had bought to make some shelves.	He asked his neighbor if he could borrow her	saw	hammer	rake	L
+25	Tina lined up where she thought the nail should go.	When she was satisfied, she asked Bruce to hand her the	hammer	saw	shovel	H
+26	The snow had piled up on the drive so high that they couldn’t get the car out.	When Albert woke up, his father handed him a	shovel	rake	saw	H
+27	The yard was completely covered with a thick layer of dead leaves.	Erica decided it was time to get out the	rake	shovel	hammer	H
+28	Fred went to the pantry and got out the homemade jelly his grandmother had brought.	Fifteen minutes later, however, he was still struggling to open the	jar	box	zipper	L
+29	After they unpacked the new refrigerator, they let Billy have his fun.	He played for days afterwards with the big	box	jar	button	L
+30	It seemed to catch every time she opened or closed her backpack.	She decided she would have to replace the	zipper	button	box	H
+31	One fell off her blouse and got lost, and she didn’t have any extras.	She ended up searching all over town to find a matching	button	zipper	jar	H
+32	“I’m an animal like Eeyore!” the child exclaimed.	His mother wondered why he was pretending to be a	donkey	zebra	greyhound	L
+33	At the zoo, my sister asked if they painted the black and white stripes on the animal.	I explained to her that they were natural features of a	zebra	donkey	chihuahua	H
