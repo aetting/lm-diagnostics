@@ -14,7 +14,7 @@ matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import itertools
 
-def process_fk(infile,tokenizer):
+def process_fk(infile):
     hldict = {}
     inputlist = []
     inputlist_shuf = []
@@ -62,10 +62,10 @@ def process_fk(infile,tokenizer):
                 hldict[i]['exp'] = [exp]
                 hldict[i]['cond'] = cond
                 i += 1
-                try:
-                    tokenizer.convert_tokens_to_ids([tgt])
-                except:
-                    print('OOV: %s'%tgt)
+                # try:
+                #     tokenizer.convert_tokens_to_ids([tgt])
+                # except:
+                #     print('OOV: %s'%tgt)
             # cleancsv.append(','.join([str(it),str(origsent),exp,wc,bc,m.group(1)]))
     # with open(infile+'-clean.csv','wb') as f:
     #     f.write('item,context,expected,within_category,between_category,constraint')
@@ -108,7 +108,7 @@ def process_fk(infile,tokenizer):
 #
 #     return clozedict
 
-def process_rr(csvfile,tokenizer,gen_obj=False,gen_subj=False):
+def process_rr(csvfile,gen_obj=False,gen_subj=False):
     inputlist = []
     tgtlist = []
     clozedict = {}
@@ -154,15 +154,15 @@ def process_rr(csvfile,tokenizer,gen_obj=False,gen_subj=False):
             clozedict[i]['exp'] = exp
             clozelist.append(maxcloze)
             i += 1
-            try:
-                tokenizer.convert_tokens_to_ids([tgt])
-            except:
-                print('OOV: %s'%tgt)
-            for e in exp:
-                try:
-                    tokenizer.convert_tokens_to_ids([e.split()[0]])
-                except:
-                    print('OOV: %s -- %s'%(e,exp))
+            # try:
+            #     tokenizer.convert_tokens_to_ids([tgt])
+            # except:
+            #     print('OOV: %s'%tgt)
+            # for e in exp:
+            #     try:
+            #         tokenizer.convert_tokens_to_ids([e.split()[0]])
+            #     except:
+            #         print('OOV: %s -- %s'%(e,exp))
             # try:
             #     cleantgtcloze = rawcloze[itemnum][condition]['cloze'][tgt]
             # except:
@@ -177,7 +177,7 @@ def process_rr(csvfile,tokenizer,gen_obj=False,gen_subj=False):
     #         f.write(line + '\n')
     return clozedict,inputlist,tgtlist,clozelist
 
-def process_fischler(infile,tokenizer):
+def process_fischler(infile):
     nkdict = {}
     inputlist = []
     tgtlist = []
@@ -210,11 +210,11 @@ def process_fischler(infile,tokenizer):
                 inputlist.append(masked_sent)
                 tgtlist.append(tgt)
                 i += 1
-            for t in afftgt,negtgt:
-                try:
-                    tokenizer.convert_tokens_to_ids([t])
-                except:
-                    print('OOV: %s'%t)
+            # for t in afftgt,negtgt:
+            #     try:
+            #         tokenizer.convert_tokens_to_ids([t])
+            #     except:
+            #         print('OOV: %s'%t)
     #         affsent = affsent.split()
     #         affsent.pop()
     #         affsent = ' '.join(affsent) + ' [a|an]'
@@ -228,7 +228,7 @@ def process_fischler(infile,tokenizer):
     #         f.write(line + '\n')
     return inputlist,nkdict,tgtlist
 
-def process_nk(infile,tokenizer):
+def process_nk(infile):
     nkdict = {}
     inputlist = []
     tgtlist = []
@@ -258,11 +258,11 @@ def process_nk(infile,tokenizer):
                 inputlist.append(masked_sent)
                 tgtlist.append(tgt)
                 i += 1
-            for t in afftgt,negtgt:
-                try:
-                    tokenizer.convert_tokens_to_ids([t])
-                except:
-                    print('OOV: %s'%t)
+            # for t in afftgt,negtgt:
+            #     try:
+            #         tokenizer.convert_tokens_to_ids([t])
+            #     except:
+            #         print('OOV: %s'%t)
     # with open(infile+'-clean.tsv','wb') as f:
     #     f.write('\t'.join(['item','context_pos','context_neg','target_pos','target_neg','licensing']) + '\n')
     #     for line in csvclean:
@@ -850,12 +850,12 @@ def run_three_orig(args,models,klist,bert=True):
 
     with open(args.resultsdir+'/results-rr.txt','wb') as out:
         clozedict,inputlist,tgtlist,clozelist = process_rr(args.rr_stim,gen_obj=False,gen_subj=False)
-        # run_rr_all(args,out,models,'orig',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
+        run_rr_all(args,out,models,'orig',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
 
     with open(args.resultsdir+'/results-fk.txt','wb') as out:
         hldict,inputlist,_,_,_,tgtlist = process_fk(args.fk_stim)
-    #     _,_,outstring = run_fk_all(args,out,models,'orig',klist,hldict,inputlist,tgtlist,bert=bert)
-    #     out.write(outstring)
+        _,_,outstring = run_fk_all(args,out,models,'orig',klist,hldict,inputlist,tgtlist,bert=bert)
+        out.write(outstring)
 
 
 if __name__ == "__main__":
@@ -888,7 +888,7 @@ if __name__ == "__main__":
     klist = [1,5]
 
     # models = [('bert-base-uncased',bert_base,tokenizer_base),('bert-large-uncased',bert_large,tokenizer_large)]
-    # models = [('bert-base-uncased',bert_base,tokenizer_base)]
+    models = [('bert-base-uncased',bert_base,tokenizer_base)]
     models = []
 
     print('RUNNING EXPERIMENTS')
