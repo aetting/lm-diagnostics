@@ -26,17 +26,10 @@ def process_fk(infile):
         i = 0
         for line in f:
             if len(line.strip('\t')) < 2: continue
-            #m = re.match('\(([H|L])\) (.+)\s(.*)\/(.*)\/(.*)\.',line.strip())
-            #m2 = re.match('\([H|L]\) (.+)\.(.+)\s.*\/.*\/.*\.',line.strip())
             it,sent1,sent2,exp,wc,bc,constraint = line.strip().split('\t')
             if it == 'item': continue
-            #exp,wc,bc = m.group(3,4,5)
-            #sent1,sent2 = m2.group(1,2)
-            #remove period from s1 for shuffling purposes
             sent1l = re.sub('\.','',sent1).split()
             sent2l = sent2.split()
-            #origs1 = copy.copy(sent1)
-            #origs2 = copy.copy(sent2)
             random.shuffle(sent1l)
             sent2l = sent2l[-2:]
             origsent = ' '.join([sent1,sent2])
@@ -62,51 +55,7 @@ def process_fk(infile):
                 hldict[i]['exp'] = [exp]
                 hldict[i]['cond'] = cond
                 i += 1
-                # try:
-                #     tokenizer.convert_tokens_to_ids([tgt])
-                # except:
-                #     print('OOV: %s'%tgt)
-            # cleancsv.append(','.join([str(it),str(origsent),exp,wc,bc,m.group(1)]))
-    # with open(infile+'-clean.csv','wb') as f:
-    #     f.write('item,context,expected,within_category,between_category,constraint')
-    #     for line in cleancsv:
-    #         print(line)
-    #         f.write(line + '\n')
-    # written = []
-    # with open(re.sub('(\.txt)|(\.csv)','',infile)+'-1perline.txt','w') as f:
-    #     for it in inputlist:
-    #         if it in written:
-    #             continue
-    #         written.append(it)
-    #         f.write(it + ' . \n')
     return hldict,inputlist,inputlist_shuf,inputlist_nw,inputlist_shufnw,tgtlist
-
-# def process_rr_rawcloze(clozefile):
-#     clozedict = {}
-#     itemlist = []
-#     with open(clozefile,'rU') as f:
-#         for line in f:
-#             linesplit = line.strip().split(',')
-#             itm = linesplit[0].strip()
-#             if itm == 'item': continue
-#             if itm not in itemlist: itemlist.append(itm)
-#             cond = linesplit[1].strip()
-#             sent = linesplit[2].strip()
-#             completions = [e.strip() for e in linesplit[3:]]
-#             if itm not in clozedict:
-#                 clozedict[itm] = {}
-#             clozedict[itm][cond] = {}
-#             clozedict[itm][cond]['sent'] = sent
-#             tot_resps = float(len(completions))
-#             compl_counts = Counter(completions)
-#             compl_cloze = {k:compl_counts[k]/tot_resps for k in compl_counts}
-#             sorted_cloze = sorted(compl_cloze.items(),key=lambda x:x[1])
-#             m = max([c for w,c in sorted_cloze])
-#             top_preds = [(w,c) for w,c in sorted_cloze if c == m]
-#             clozedict[itm][cond]['cloze'] = compl_cloze
-#             clozedict[itm][cond]['top'] = top_preds
-#
-#     return clozedict
 
 def process_rr(csvfile,gen_obj=False,gen_subj=False):
     inputlist = []
@@ -114,7 +63,6 @@ def process_rr(csvfile,gen_obj=False,gen_subj=False):
     clozedict = {}
     clozelist = []
     i = 0
-    # cleancsv = []
     with open(csvfile,'rU') as f:
         for line in f:
             linesplit = line.strip().split('\t')
@@ -141,7 +89,6 @@ def process_rr(csvfile,gen_obj=False,gen_subj=False):
                         break
             else:
                 clozedict[i]['maxcloze'] = maxcloze
-            # exp = [w for w,c in rawcloze[itemnum][condition]['top']]
             inputlist.append(masked_sent)
             tgtlist.append(tgt)
             clozedict[i]['sent'] = masked_sent
@@ -150,31 +97,9 @@ def process_rr(csvfile,gen_obj=False,gen_subj=False):
             clozedict[i]['item'] = itemnum
             clozedict[i]['tgtcloze'] = tgtcloze
             clozedict[i]['tgtcloze_strict'] = tgtcloze_strict
-            # clozedict[i]['fuzexp'] = fuzexp
             clozedict[i]['exp'] = exp
             clozelist.append(maxcloze)
             i += 1
-            # try:
-            #     tokenizer.convert_tokens_to_ids([tgt])
-            # except:
-            #     print('OOV: %s'%tgt)
-            # for e in exp:
-            #     try:
-            #         tokenizer.convert_tokens_to_ids([e.split()[0]])
-            #     except:
-            #         print('OOV: %s -- %s'%(e,exp))
-            # try:
-            #     cleantgtcloze = rawcloze[itemnum][condition]['cloze'][tgt]
-            # except:
-            #     cleantgtcloze = 0.
-            # cleanmaxcloze = rawcloze[itemnum][condition]['cloze'][exp[0]]
-    #         exp = [e for e in exp if not re.match('.+\(pass\)',e) and not re.match('been',e)]
-    #         print(exp)
-    #         cleancsv.append('\t'.join(['%s-%s'%(itemnum,condition),sent,'|'.join(exp),str(maxcloze),tgt,str(tgtcloze),str(tgtcloze_strict)]))
-    # with open(csvfile+'-clean.tsv','wb') as f:
-    #     # f.write('\t'.join(['item','context','expected','exp_cloze','target','tgt_cloze','tgt_cloze(strict)']) + '\n')
-    #     for line in cleancsv:
-    #         f.write(line + '\n')
     return clozedict,inputlist,tgtlist,clozelist
 
 def process_fischler(infile):
@@ -186,11 +111,9 @@ def process_fischler(infile):
     csvclean = []
     with open(infile,'rU') as f:
         for line in f:
-            # ta,fn,fa,tn,aff_tgt,neg_tgt,_ = [e.strip() for e in line.strip().split(',')]
             it,affsent,negsent,afftgt,negtgt = [e.strip() for e in line.strip().split('\t')]
             affsent = re.sub(' \(.+\)','',affsent)
             negsent = re.sub(' \(.+\)','',negsent)
-            # for cond,condsent in [('TA',ta),('TN',tn),('FA',fa),('FN',fn)]:
             if it == 'item': continue
             for sent,tgt,cond in [(affsent,afftgt,'TA'),(negsent,afftgt,'FN'),(affsent,negtgt,'FA'),(negsent,negtgt,'TN')]:
                 nkdict[i] = {}
@@ -203,29 +126,11 @@ def process_fischler(infile):
                 nkdict[i]['cond'] = cond
                 if cond in ('TA','FA'):
                     nkdict[i]['exp'] = [afftgt]
-                    # affsent = ' '.join(sent)
                 else:
                     nkdict[i]['exp'] = [negtgt]
-                    # negsent = ' '.join(sent)
                 inputlist.append(masked_sent)
                 tgtlist.append(tgt)
                 i += 1
-            # for t in afftgt,negtgt:
-            #     try:
-            #         tokenizer.convert_tokens_to_ids([t])
-            #     except:
-            #         print('OOV: %s'%t)
-    #         affsent = affsent.split()
-    #         affsent.pop()
-    #         affsent = ' '.join(affsent) + ' [a|an]'
-    #         negsent = negsent.split()
-    #         negsent.pop()
-    #         negsent = ' '.join(negsent) + ' [a|an]'
-    #         csvclean.append('\t'.join([str(it),affsent,negsent,afftgt,negtgt]))
-    # with open(infile+'-clean.tsv','wb') as f:
-    #     f.write('\t'.join(['item','context_pos','context_neg','target_pos','target_neg']) + '\n')
-    #     for line in csvclean:
-    #         f.write(line + '\n')
     return inputlist,nkdict,tgtlist
 
 def process_nk(infile):
@@ -234,12 +139,9 @@ def process_nk(infile):
     tgtlist = []
     it = 0
     i = 0
-    # csvclean = []
     with open(infile,'rU') as f:
         for line in f:
-            # c,ta,tn,fa,fn,aff_tgt,neg_tgt = [e.strip() for e in line.strip().split('&&')]
             it,affsent,negsent,afftgt,negtgt,lic = [e.strip() for e in line.strip().split('\t')]
-            # for cond,condsent in [('TA',ta),('TN',tn),('FA',fa),('FN',fn)]:
             if it == 'item': continue
             for sent,tgt,cond in [(affsent,afftgt,'TA'),(negsent,afftgt,'FN'),(affsent,negtgt,'FA'),(negsent,negtgt,'TN')]:
                 nkdict[i] = {}
@@ -251,22 +153,11 @@ def process_nk(infile):
                 nkdict[i]['licensing'] = lic
                 if cond in ('TA','FA'):
                     nkdict[i]['exp'] = [afftgt]
-                    # affsent = ' '.join(sent)
                 else:
                     nkdict[i]['exp'] = [negtgt]
-                    # negsent = ' '.join(sent)
                 inputlist.append(masked_sent)
                 tgtlist.append(tgt)
                 i += 1
-            # for t in afftgt,negtgt:
-            #     try:
-            #         tokenizer.convert_tokens_to_ids([t])
-            #     except:
-            #         print('OOV: %s'%t)
-    # with open(infile+'-clean.tsv','wb') as f:
-    #     f.write('\t'.join(['item','context_pos','context_neg','target_pos','target_neg','licensing']) + '\n')
-    #     for line in csvclean:
-    #         f.write(line + '\n')
     return inputlist,nkdict,tgtlist
 
 def make_conddict(clozedict):
@@ -314,10 +205,7 @@ def test_fk_acc(hldict,inputlist,tgtlist,model,tokenizer,setting,fklog,k=5,bert=
             print(hldict[i]['exp'])
             continue
         score = 0
-        # logfile.write(hldict[i]['sent'])
-        # logfile.write(str(hldict[i]['exp']) + '\n')
         for subpr in pr:
-            # logfile.write(str(subpr) + '\n')
             for candidate in subpr:
                 if candidate.strip() in hldict[i]['exp']:
                     score = 1
@@ -327,8 +215,6 @@ def test_fk_acc(hldict,inputlist,tgtlist,model,tokenizer,setting,fklog,k=5,bert=
                 correct.append(ctup)
         tot_score.append(score)
         by_constraint_score[hldict[i]['constraint']].append(score)
-        # logfile.write(str(top_probs[i])+ '\n')
-        # logfile.write('---\n')
     n4report = sim_fk_N400(hldict,tok_preds,top_probs,tok_probs,fklog,setting,k=k,bert=bert)
     tot_acc = get_acc(tot_score)
     report = '\nPrediction accuracies:\n'
@@ -338,10 +224,6 @@ def test_fk_acc(hldict,inputlist,tgtlist,model,tokenizer,setting,fklog,k=5,bert=
     return report,n4report,correct,tot_acc,oov_list
 
 def sim_fk_N400(hldict,tok_preds,top_probs,tok_probs,logfile,setting,k=5,bert=True):
-    # for s in inputlist:
-    #     print(s)
-    # tok_preds,top_probs = tp.get_predictions(inputlist,model,tokenizer,k=k,bert=bert)
-    # tok_probs,oov_list = tp.get_probabilities(inputlist,tgtlist,model,tokenizer,bert=bert)
     for i,prob in enumerate(tok_probs):
         hldict[i]['tgtprob'] = prob
         hldict[i]['toppreds'] = tok_preds[i]
@@ -435,30 +317,20 @@ def test_rr_acc(clozedict,inputlist,tgtlist,clozelist,model,tokenizer,rrlog,k=5,
         print(clozedict[i]['sent'])
         itm = clozedict[i]['item']
         cond = clozedict[i]['cond']
-        # print(rawclozedict[itm][cond]['top'])
         for subpr in pred:
             predcounts.update(subpr)
             print(subpr)
             print(clozedict[i]['exp'])
-            # rawclozevals = []
             for candidate in subpr:
-                # if rawclozedict:
-                #     if candidate.strip() in rawclozedict[itm][cond]['cloze']:
-                #         rawclozevals.append(rawclozedict[itm][cond]['cloze'][candidate.strip()])
-                #     else:
-                #         rawclozevals.append(0.)
+
                 if candidate.strip() in [e.split()[0] for e in clozedict[i]['exp']]:
                     score = 1
                     print('WINNER\n')
-        #     print(rawclozevals)
-        # print(top_probs[i])
-        # print('---')
         if score == 1:
             ctup = (clozedict[i]['sent'],clozedict[i]['exp'],pred,clozedict[i]['maxcloze'])
             if ctup not in correct:
                 correct.append(ctup)
         tot_score.append(score)
-        # clozethresh = .4
         if clozedict[i]['maxcloze'] <= q1:
             q1_corr.append(score)
         elif clozedict[i]['maxcloze'] <= q2:
@@ -471,8 +343,6 @@ def test_rr_acc(clozedict,inputlist,tgtlist,clozelist,model,tokenizer,rrlog,k=5,
     n4report = sim_rr_N400(clozedict,tok_preds,top_probs,tok_probs,rrlog,scat=scat,k=k,bert=bert)
     report = '\nPrediction accuracies:\n'
     report += 'TGT in top %s preds: %s\n'%(k,get_acc(tot_score))
-    # report += 'Tgt in top %s for HC: %s (%s thresh, %s items)\n'%(k,get_acc(hc_corr),clozethresh,len(hc_corr))
-    # report += 'Tgt in top %s for LC: %s (%s thresh, %s items)\n'%(k,get_acc(lc_corr),clozethresh,len(lc_corr))
     report += 'TGT in top %s for Q1: %s (%s upper, %s items)\n'%(k,get_acc(q1_corr),q1,len(q1_corr))
     report += 'TGT in top %s for Q2: %s (%s upper, %s items)\n'%(k,get_acc(q2_corr),q2,len(q2_corr))
     report += 'TGT in top %s for Q3: %s (%s upper, %s items)\n'%(k,get_acc(q3_corr),q3,len(q3_corr))
@@ -482,10 +352,6 @@ def test_rr_acc(clozedict,inputlist,tgtlist,clozelist,model,tokenizer,rrlog,k=5,
     return report,n4report,correct,predcounts,oov_list
 
 def sim_rr_N400(clozedict,tok_preds,top_probs,tok_probs,logfile,scat=None,k=5,bert=True):
-    # for s in inputlist:
-    #     print(s)
-    # tok_preds,top_probs = tp.get_predictions(inputlist,model,tokenizer,k=k,bert=bert)
-    # tok_probs,oov_list = tp.get_probabilities(inputlist,tgtlist,model,tokenizer,bert=bert)
     for i,prob in enumerate(tok_probs):
         clozedict[i]['tgtprob'] = prob
         clozedict[i]['toppreds'] = tok_preds[i]
@@ -537,8 +403,6 @@ def sim_rr_N400(clozedict,tok_preds,top_probs,tok_probs,logfile,scat=None,k=5,be
         else:
             same.append(0)
         logfile.write('----\n\n\n')
-    # probdiffs = [e[0] - e[1] for i,e in enumerate(probpairs) if e[0] and e[1]]
-    # clozediffs = [e[0] - e[1] for i,e in enumerate(clozepairs) if probpairs[i][0] and probpairs[i][1]]
     probdiffs = [e[0] - e[1] for i,e in enumerate(probpairs)]
     clozediffs = [e[0] - e[1] for i,e in enumerate(clozepairs)]
     if scat:
@@ -574,16 +438,11 @@ def test_nkf_acc(nkfdict,inputlist,tgtlist,model,tokenizer,nkflog,k=5,bert=True)
     tok_probs,oov_list = tp.get_probabilities(inputlist,tgtlist,model,tokenizer,bert=bert)
     for i,pred in enumerate(tok_preds):
         score = 0
-        # print(nkfdict[i]['sent'])
-        # print(nkfdict[i]['exp'])
         for subpr in pred:
-            # print(subpr)
             rawclozevals = []
             for candidate in subpr:
                 if candidate.strip() in nkfdict[i]['exp']:
                     score = 1
-        # print(top_probs[i])
-        # print('---')
         if score == 1:
             ctup = (nkfdict[i]['sent'],nkfdict[i]['exp'],pred,nkfdict[i]['cond'])
             if ctup not in correct:
@@ -604,8 +463,6 @@ def test_nkf_acc(nkfdict,inputlist,tgtlist,model,tokenizer,nkflog,k=5,bert=True)
     return report,n4report,correct,oov_list
 
 def sim_nkf_N400(clozedict,tok_preds,top_probs,tok_probs,logfile,k=5,bert=True):
-    # tok_preds,top_probs = tp.get_predictions(inputlist,model,tokenizer,k=k,bert=bert)
-    # tok_probs,oov_list = tp.get_probabilities(inputlist,tgtlist,model,tokenizer,bert=bert)
     for i,prob in enumerate(tok_probs):
         clozedict[i]['tgtprob'] = prob
         clozedict[i]['toppreds'] = tok_preds[i]
@@ -690,7 +547,6 @@ def run_fk_all(args,out,models,logcode,klist,hldict,inputlist,tgtlist,bert=True)
         reports = []
         for k in klist:
             with open(os.path.join(args.resultsdir,'FK-%s_predlog_%s-%s'%(logcode,modelname,k)),'wb') as fklog:
-                # n4report = sim_fk_N400(hldict,inputlist,tgtlist,model,tokenizer,fklog,logcode,k=k,bert=bert)
                 report,n4report,corr,acc,oov_list = test_fk_acc(hldict,inputlist,tgtlist,model,tokenizer,logcode,fklog,k=k,bert=bert)
                 acclist.append(acc)
                 acclist_names.append(modelname + '-%s'%k)
@@ -703,18 +559,13 @@ def run_fk_all(args,out,models,logcode,klist,hldict,inputlist,tgtlist,bert=True)
         outstring +='\nFED/KUT N400\n'
         outstring += n4
         outstring +='\n----\n\n'
-        # outstring +='OOV\n'
-        # for w in oov_list:
-        #     outstring += w + '\n'
     return acclist,acclist_names,outstring
 
 
 def run_rr_all(args,out,models,logcode,klist,clozedict,inputlist,tgtlist,clozelist,bert=True,gen_obj=False,gen_subj=False):
     out.write('\n\n***\nSETTING: %s\n***\n\n'%logcode)
-    # rawclozedict = process_rr_rawcloze(args.rr_raw)
     for modelname,model,tokenizer in models:
         out.write('\n\n***\nMODEL: %s\n***\n'%modelname)
-        print(modelname)
         reports = []
         for k in klist:
             with open(os.path.join(args.resultsdir,'RR-%s_predlog_%s-%s'%(logcode,modelname,k)),'wb') as rrlog:
@@ -732,9 +583,6 @@ def run_rr_all(args,out,models,logcode,klist,clozedict,inputlist,tgtlist,clozeli
         out.write(n4)
         out.write('\n----\n\n')
 
-        # out.write('OOV\n')
-        # for w in oov_list:
-        #     out.write(w + '\n')
     return report,n4report
 
 
@@ -758,28 +606,6 @@ def run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,bert=True):
         out.write('\nFISCHLER N400\n')
         out.write(n4)
         out.write('\n----\n\n')
-        # out.write('OOV\n')
-        # for w in oov_list:
-        #     out.write(w + '\n')
-
-        # reports = []
-        # for k in klist:
-        #     with open(args.resultsdir+'/NK_predlog_%s-%s'%(modelname,k),'wb') as nklog:
-        #         print('NIEUWLAND k=%s\n'%k)
-        #         report,n4report,corr,oov_list = test_nkf_acc(nkdict,inputlist_nk,tgtlist_nk,model,tokenizer,nklog,k=k,bert=bert)
-        #         # n4report = sim_nkf_N400(nkdict,inputlist,tgtlist,model,tokenizer,nklog,bert=bert)
-        #         for crritem in corr:
-        #             nklog.write(str(crritem) + '\n')
-        #         reports.append((report,n4report,k))
-        # for acc,n4,k in reports:
-        #     out.write('NIEUWLAND k=%s acc\n'%k)
-        #     out.write(acc)
-        # out.write('\nNIEUWLAND N400\n')
-        # out.write(n4)
-        # out.write('\n----\n\n')
-        # # out.write('OOV\n')
-        # # for w in oov_list:
-        # #     out.write(w + '\n')
 
 def run_weight_mixing():
     ftcode = args.ftcode
@@ -882,42 +708,15 @@ if __name__ == "__main__":
 
     print('LOADING MODELS')
     bert_base,tokenizer_base = tp.load_model(args.bertbase)
-    # bert_large,tokenizer_large = tp.load_model(args.bertlarge)
+    bert_large,tokenizer_large = tp.load_model(args.bertlarge)
 
 
     klist = [1,5]
 
-    # models = [('bert-base-uncased',bert_base,tokenizer_base),('bert-large-uncased',bert_large,tokenizer_large)]
-    models = [('bert-base-uncased',bert_base,tokenizer_base)]
-    models = []
+    models = [('bert-base-uncased',bert_base,tokenizer_base),('bert-large-uncased',bert_large,tokenizer_large)]
+    # models = [('bert-base-uncased',bert_base,tokenizer_base)]
+    # models = []
 
     print('RUNNING EXPERIMENTS')
     run_three_orig(args,models,klist,bert=True)
     # run_aux_tests(args,models,klist,bert=True)
-
-    # modelnames = ['bert-base-uncased','bert-large-uncased']
-    # models = []
-    # for mn in modelnames:
-    #     print('LOADING %s'%mn)
-    #     model,tokenizer = tp.load_model(mn)
-    #     inputlist = []
-    #     with open(args.manual) as manual_inputs:
-    #         for line in manual_inputs:
-    #             inputlist.append(line.strip())
-    #     tok_preds,tok_probs = tp.get_predictions(inputlist,model,tokenizer,bert=True)
-        # for i,sent in enumerate(inputlist):
-        #     print(sent)
-        #     print(tok_preds[i])
-        #     print(tok_probs[i])
-        #     print('---')
-    # inputlist = [
-    # 'the camper reported which girl the bear had [MASK] .',
-    # 'the restaurant owner forgot which waitress the customer had [MASK] .'
-    # ]
-    # tp.get_attention(inputlist,model1,tokenizer1,bert=True)
-    # tok_preds,tok_probs = tp.get_predictions(inputlist,model1,tokenizer1,bert=True)
-    # for i,sent in enumerate(inputlist):
-    #     print(sent)
-    #     print(tok_preds[i])
-    #     print(tok_probs[i])
-    #     print('---')
