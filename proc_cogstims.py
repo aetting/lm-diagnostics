@@ -263,8 +263,8 @@ def sim_fk_N400(conddict,logfile,setting,k=5,bert=True):
         # invoc = (pair[0] and pair[1] and pair[2])
         exp_prob,wc_prob,bc_prob = [conddict[it][cont]['tgtprob'][0] for cont in ['exp','wc','bc']]
         # logfile.write(u' '.join(stimtrips[i]).encode('utf-8') + '\n')
-        logfile.write(conddict[it]['exp']['sent'][setting])
-        logfile.write(' ' + '/'.join([conddict[it][cont]['tgt'] for cont in ['exp','wc','bc']]))
+        logfile.write(conddict[it]['exp']['sent'][setting].encode('utf-8'))
+        logfile.write(' ' + '/'.join([conddict[it][cont]['tgt'] for cont in ['exp','wc','bc']]) + '\n')
         # logfile.write('TGT probs: %s\n'%list(pair))
         logfile.write('TGT probs: %s\n'%[exp_prob,wc_prob,bc_prob])
         # logfile.write('PREDICTED: %s\n'%toppreds[i])
