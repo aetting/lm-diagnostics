@@ -200,10 +200,14 @@ def test_fk_acc(hldict,inputlist,tgtlist,model,tokenizer,setting,fklog,k=5,bert=
     by_constraint_score['L'] = []
     correct = []
     for i,pr in enumerate(tok_preds):
-        if len(set(hldict[i]['exp']) & set(oov_list)) > 0:
-            print('\n\nSKIPPING THIS')
-            print(hldict[i]['exp'])
-            continue
+        hldict[i]['toppreds'] = pr
+        hldict[i]['tgtprob'] = tok_probs[i]
+        hldict[i]['topprobs'] = top_probs[i]
+    # for i,pr in enumerate(tok_preds):
+        # if len(set(hldict[i]['exp']) & set(oov_list)) > 0:
+        #     print('\n\nSKIPPING THIS')
+        #     print(hldict[i]['exp'])
+        #     continue
         score = 0
         for subpr in pr:
             for candidate in subpr:
@@ -215,7 +219,8 @@ def test_fk_acc(hldict,inputlist,tgtlist,model,tokenizer,setting,fklog,k=5,bert=
                 correct.append(ctup)
         tot_score.append(score)
         by_constraint_score[hldict[i]['constraint']].append(score)
-    n4report = sim_fk_N400(hldict,tok_preds,top_probs,tok_probs,fklog,setting,k=k,bert=bert)
+    conddict = make_conddict(hldict)
+    n4report = sim_fk_N400(conddict,fklog,setting,k=k,bert=bert)
     tot_acc = get_acc(tot_score)
     report = '\nPrediction accuracies:\n'
     report += 'EXP TGT in TOP %s preds: %s\n'%(k,tot_acc)
@@ -223,23 +228,23 @@ def test_fk_acc(hldict,inputlist,tgtlist,model,tokenizer,setting,fklog,k=5,bert=
     report += 'in TOP %s for L: %s\n'%(k,get_acc(by_constraint_score['L']))
     return report,n4report,correct,tot_acc,oov_list
 
-def sim_fk_N400(hldict,tok_preds,top_probs,tok_probs,logfile,setting,k=5,bert=True):
-    for i,prob in enumerate(tok_probs):
-        hldict[i]['tgtprob'] = prob
-        hldict[i]['toppreds'] = tok_preds[i]
-        hldict[i]['topprobs'] = top_probs[i]
-    conddict = make_conddict(hldict)
-    probtrips = []
-    stimtrips = []
-    constrips = []
-    toppreds = []
-    topprobs = []
-    for it in conddict:
-        probtrips.append((conddict[it]['exp']['tgtprob'][0],conddict[it]['wc']['tgtprob'][0],conddict[it]['bc']['tgtprob'][0]))
-        constrips.append(conddict[it]['exp']['constraint'])
-        toppreds.append(conddict[it]['exp']['toppreds'])
-        topprobs.append(conddict[it]['exp']['topprobs'])
-        stimtrips.append(conddict[it]['exp']['sent'][setting] + ' ' + '/'.join([conddict[it]['exp']['tgt'],conddict[it]['wc']['tgt'],conddict[it]['bc']['tgt']]))
+def sim_fk_N400(conddict,logfile,setting,k=5,bert=True):
+    # for i,prob in enumerate(tok_probs):
+    #     hldict[i]['tgtprob'] = prob
+    #     hldict[i]['toppreds'] = tok_preds[i]
+    #     hldict[i]['topprobs'] = top_probs[i]
+    # conddict = make_conddict(hldict)
+    # probtrips = []
+    # stimtrips = []
+    # constrips = []
+    # toppreds = []
+    # topprobs = []
+    # for it in conddict:
+    #     probtrips.append((conddict[it]['exp']['tgtprob'][0],conddict[it]['wc']['tgtprob'][0],conddict[it]['bc']['tgtprob'][0]))
+    #     constrips.append(conddict[it]['exp']['constraint'])
+    #     toppreds.append(conddict[it]['exp']['toppreds'])
+    #     topprobs.append(conddict[it]['exp']['topprobs'])
+    #     stimtrips.append(conddict[it]['exp']['sent'][setting] + ' ' + '/'.join([conddict[it]['exp']['tgt'],conddict[it]['wc']['tgt'],conddict[it]['bc']['tgt']]))
     thresh = 0.01
     exp_top = {}
     exp_top['H'] = []
@@ -253,26 +258,35 @@ def sim_fk_N400(hldict,tok_preds,top_probs,tok_probs,logfile,setting,k=5,bert=Tr
     allprobs = {}
     allprobs['H'] = []
     allprobs['L'] = []
-    for i,pair in enumerate(probtrips):
-        invoc = (pair[0] and pair[1] and pair[2])
-        logfile.write(u' '.join(stimtrips[i]).encode('utf-8') + '\n')
-        logfile.write('TGT probs: %s\n'%list(pair))
-        logfile.write('PREDICTED: %s\n'%toppreds[i])
-        logfile.write(str(topprobs[i]) + '\n')
-        logfile.write(constrips[i]+ '\n')
-        cons = constrips[i]
-        allprobs[cons].append(pair)
-        if (pair[0] > pair[1]) and (pair[0] > pair[2]):
+    # for i,pair in enumerate(probtrips):
+    for it in conddict:
+        # invoc = (pair[0] and pair[1] and pair[2])
+        exp_prob,wc_prob,bc_prob = [conddict[it][cont]['tgtprob'][0] for cont in ['exp','wc','bc']]
+        # logfile.write(u' '.join(stimtrips[i]).encode('utf-8') + '\n')
+        logfile.write(conddict[it]['exp']['sent'][setting])
+        logfile.write(' ' + '/'.join([conddict[it][cont]['tgt'] for cont in ['exp','wc','bc']]))
+        # logfile.write('TGT probs: %s\n'%list(pair))
+        logfile.write('TGT probs: %s\n'%[exp_prob,wc_prob,bc_prob])
+        # logfile.write('PREDICTED: %s\n'%toppreds[i])
+        # logfile.write(str(topprobs[i]) + '\n')
+        # logfile.write(constrips[i]+ '\n')
+        logfile.write('PREDICTED: %s\n'%conddict[it]['exp']['toppreds'])
+        logfile.write(str(conddict[it]['exp']['topprobs']) + '\n')
+        # cons = constrips[i]
+        cons = conddict[it]['exp']['constraint']
+        logfile.write(cons + '\n')
+        allprobs[cons].append((exp_prob,wc_prob,bc_prob))
+        if (exp_prob > wc_prob) and (exp_prob > bc_prob):
             exp_top[cons].append(1)
             logfile.write('EXP TOP\n')
-            if abs(pair[0] - pair[1]) > thresh and abs(pair[0] - pair[2]) > thresh:
+            if abs(exp_prob - wc_prob) > thresh and abs(exp_prob - bc_prob) > thresh:
                 exp_top_thresh[cons].append(1)
             else:
                 exp_top_thresh[cons].append(0)
         else:
             exp_top[cons].append(0)
             exp_top_thresh[cons].append(0)
-        if (pair[1] > pair[2]) and abs(pair[1] - pair[2]) > thresh:
+        if (wc_prob > bc_prob) and abs(wc_prob - bc_prob) > thresh:
             wc_boost[cons].append(1)
             logfile.write('WC BOOST\n')
         else:
@@ -668,15 +682,15 @@ def run_aux_tests(args,models,klist,bert=True):
 
 #runs all three datasets without any perturbations from paper
 def run_three_orig(args,models,klist,bert=True):
-    with open(args.resultsdir+'/results-neg.txt','wb') as out:
-        inputlist,negdict,tgtlist = process_fischler(args.fisch_stim)
-        run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,bert=bert)
-        inputlist,negdict,tgtlist = process_nk(args.nk_stim)
-        run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,bert=bert)
-
-    with open(args.resultsdir+'/results-rr.txt','wb') as out:
-        clozedict,inputlist,tgtlist,clozelist = process_rr(args.rr_stim,gen_obj=False,gen_subj=False)
-        run_rr_all(args,out,models,'orig',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
+    # with open(args.resultsdir+'/results-neg.txt','wb') as out:
+    #     inputlist,negdict,tgtlist = process_fischler(args.fisch_stim)
+    #     run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,bert=bert)
+    #     inputlist,negdict,tgtlist = process_nk(args.nk_stim)
+    #     run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,bert=bert)
+    #
+    # with open(args.resultsdir+'/results-rr.txt','wb') as out:
+    #     clozedict,inputlist,tgtlist,clozelist = process_rr(args.rr_stim,gen_obj=False,gen_subj=False)
+    #     run_rr_all(args,out,models,'orig',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
 
     with open(args.resultsdir+'/results-fk.txt','wb') as out:
         hldict,inputlist,_,_,_,tgtlist = process_fk(args.fk_stim)
@@ -708,13 +722,13 @@ if __name__ == "__main__":
 
     print('LOADING MODELS')
     bert_base,tokenizer_base = tp.load_model(args.bertbase)
-    bert_large,tokenizer_large = tp.load_model(args.bertlarge)
+    # bert_large,tokenizer_large = tp.load_model(args.bertlarge)
 
 
-    klist = [1,5]
+    klist = [5]
 
-    models = [('bert-base-uncased',bert_base,tokenizer_base),('bert-large-uncased',bert_large,tokenizer_large)]
-    # models = [('bert-base-uncased',bert_base,tokenizer_base)]
+    # models = [('bert-base-uncased',bert_base,tokenizer_base),('bert-large-uncased',bert_large,tokenizer_large)]
+    models = [('bert-base-uncased',bert_base,tokenizer_base)]
     # models = []
 
     print('RUNNING EXPERIMENTS')
