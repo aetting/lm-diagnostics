@@ -289,20 +289,23 @@ def test_rr_acc(clozedict,inputlist,tgtlist,clozelist,model,tokenizer,rrlog,k=5,
     q2 = np.percentile(clozelist,50)
     q4 = max(clozelist)
     predcounts = Counter()
+    # for i,pred in enumerate(tok_preds):
     for i,pred in enumerate(tok_preds):
+        clozedict[i]['tgtprob'] = tok_probs[i]
+        clozedict[i]['toppreds'] = tok_preds[i]
+        clozedict[i]['topprobs'] = top_probs[i]
         score = 0
-        print(clozedict[i]['sent'])
+        # print(clozedict[i]['sent'])
         itm = clozedict[i]['item']
         cond = clozedict[i]['cond']
         for subpr in pred:
             predcounts.update(subpr)
-            print(subpr)
-            print(clozedict[i]['exp'])
+            # print(subpr)
+            # print(clozedict[i]['exp'])
             for candidate in subpr:
-
                 if candidate.strip() in [e.split()[0] for e in clozedict[i]['exp']]:
                     score = 1
-                    print('WINNER\n')
+                    # print('WINNER\n')
         if score == 1:
             ctup = (clozedict[i]['sent'],clozedict[i]['exp'],pred,clozedict[i]['maxcloze'])
             if ctup not in correct:
@@ -316,8 +319,8 @@ def test_rr_acc(clozedict,inputlist,tgtlist,clozelist,model,tokenizer,rrlog,k=5,
             q3_corr.append(score)
         else:
             q4_corr.append(score)
-
-    n4report = sim_rr_N400(clozedict,tok_preds,top_probs,tok_probs,rrlog,scat=scat,k=k,bert=bert)
+    conddict = make_conddict(clozedict)
+    n4report = sim_rr_N400(conddict,rrlog,scat=scat,k=k,bert=bert)
     report = '\nPrediction accuracies:\n'
     report += 'TGT in top %s preds: %s\n'%(k,get_acc(tot_score))
     report += 'TGT in top %s for Q1: %s (%s upper, %s items)\n'%(k,get_acc(q1_corr),q1,len(q1_corr))
@@ -328,71 +331,77 @@ def test_rr_acc(clozedict,inputlist,tgtlist,clozelist,model,tokenizer,rrlog,k=5,
     report += 'MED CLOZE: %s\n'%q2
     return report,n4report,correct,predcounts,oov_list
 
-def sim_rr_N400(clozedict,tok_preds,top_probs,tok_probs,logfile,scat=None,k=5,bert=True):
-    for i,prob in enumerate(tok_probs):
-        clozedict[i]['tgtprob'] = prob
-        clozedict[i]['toppreds'] = tok_preds[i]
-        clozedict[i]['topprobs'] = top_probs[i]
-    conddict = make_conddict(clozedict)
-    probpairs = []
-    stimpairs = []
-    clozepairs = []
-    toppreds = []
-    topprobs = []
-    for it in conddict:
-        probpairs.append((conddict[it]['a']['tgtprob'][0],conddict[it]['b']['tgtprob'][0]))
-        clozepairs.append((conddict[it]['a']['tgtcloze'],conddict[it]['b']['tgtcloze']))
-        toppreds.append((conddict[it]['a']['toppreds'],conddict[it]['b']['toppreds']))
-        topprobs.append((conddict[it]['a']['topprobs'],conddict[it]['b']['topprobs']))
-        stimpairs.append((conddict[it]['a']['sent'] + ' ' + conddict[it]['a']['tgt'],conddict[it]['b']['sent'] + ' ' + conddict[it]['b']['tgt']))
-        if 'c' in conddict[it]:
-            probpairs.append((conddict[it]['d']['tgtprob'][0],conddict[it]['c']['tgtprob'][0]))
-            clozepairs.append((conddict[it]['d']['tgtcloze'],conddict[it]['c']['tgtcloze']))
-            toppreds.append((conddict[it]['d']['toppreds'],conddict[it]['c']['toppreds']))
-            topprobs.append((conddict[it]['d']['topprobs'],conddict[it]['c']['topprobs']))
-            stimpairs.append((conddict[it]['d']['sent'] + ' ' + conddict[it]['d']['tgt'],conddict[it]['c']['sent'] + ' ' + conddict[it]['c']['tgt']))
-    pattern_thresh = []
-    pattern = []
-    same = []
+def sim_rr_N400(conddict,logfile,scat=None,k=5,bert=True):
+    # for i,prob in enumerate(tok_probs):
+    #     clozedict[i]['tgtprob'] = prob
+    #     clozedict[i]['toppreds'] = tok_preds[i]
+    #     clozedict[i]['topprobs'] = top_probs[i]
+    # conddict = make_conddict(clozedict)
+    # probpairs = []
+    # stimpairs = []
+    # clozepairs = []
+    # toppreds = []
+    # topprobs = []
+    # for it in conddict:
+    #     probpairs.append((conddict[it]['a']['tgtprob'][0],conddict[it]['b']['tgtprob'][0]))
+    #     clozepairs.append((conddict[it]['a']['tgtcloze'],conddict[it]['b']['tgtcloze']))
+    #     toppreds.append((conddict[it]['a']['toppreds'],conddict[it]['b']['toppreds']))
+    #     topprobs.append((conddict[it]['a']['topprobs'],conddict[it]['b']['topprobs']))
+    #     stimpairs.append((conddict[it]['a']['sent'] + ' ' + conddict[it]['a']['tgt'],conddict[it]['b']['sent'] + ' ' + conddict[it]['b']['tgt']))
+        # if 'c' in conddict[it]:
+        #     probpairs.append((conddict[it]['d']['tgtprob'][0],conddict[it]['c']['tgtprob'][0]))
+        #     clozepairs.append((conddict[it]['d']['tgtcloze'],conddict[it]['c']['tgtcloze']))
+        #     toppreds.append((conddict[it]['d']['toppreds'],conddict[it]['c']['toppreds']))
+        #     topprobs.append((conddict[it]['d']['topprobs'],conddict[it]['c']['topprobs']))
+        #     stimpairs.append((conddict[it]['d']['sent'] + ' ' + conddict[it]['d']['tgt'],conddict[it]['c']['sent'] + ' ' + conddict[it]['c']['tgt']))
     thresh = .01
-    for i,pair in enumerate(probpairs):
-        logfile.write(str(stimpairs[i][0]) + '\n')
-        logfile.write(str(stimpairs[i][1]) + '\n')
-        logfile.write('TGT probs: %s\n'%list(pair))
-        logfile.write('TGT cloze: %s\n'%list(clozepairs[i]))
-        logfile.write('PREDICTED: %s'%toppreds[i][0] + '\n')
-        logfile.write(str(topprobs[i][0]) + '\n')
-        logfile.write('PREDICTED: %s'%toppreds[i][1] + '\n')
-        logfile.write(str(topprobs[i][1]) + '\n')
-        if (pair[0] and pair[1]) and (pair[0] > pair[1]) and (abs(pair[0] - pair[1]) > thresh):
-            pattern_thresh.append(1)
-            logfile.write('PATTERN THRESH\n')
-        else:
-            pattern_thresh.append(0)
-        if (pair[0] and pair[1]) and (pair[0] > pair[1]):
+    pattern = []
+    pattern_thresh = []
+    # same = []
+    # for i,pair in enumerate(probpairs):
+    probpairs = []
+    clozepairs = []
+    for it in conddict:
+        a_prob,b_prob = (conddict[it]['a']['tgtprob'][0],conddict[it]['b']['tgtprob'][0])
+        # logfile.write(str(stimpairs[i][0]) + '\n')
+        # logfile.write(str(stimpairs[i][1]) + '\n')
+        logfile.write(conddict[it]['a']['sent'] + '   ' + conddict[it]['a']['tgt'] + '\n')
+        logfile.write(conddict[it]['b']['sent'] + '   ' + conddict[it]['b']['tgt'] + '\n')
+        # logfile.write('TGT probs: %s\n'%list(pair))
+        logfile.write('TGT probs: %s\n'%[a_prob,b_prob])
+        # logfile.write('TGT cloze: %s\n'%list(clozepairs[i]))
+        logfile.write('TGT cloze: %s\n'%[conddict[it]['a']['tgtcloze'],conddict[it]['b']['tgtcloze']])
+        # logfile.write('PREDICTED: %s'%toppreds[i][0] + '\n')
+        # logfile.write(str(topprobs[i][0]) + '\n')
+        logfile.write('PREDICTED: %s'%conddict[it]['a']['toppreds'] + '\n')
+        logfile.write(str(conddict[it]['a']['topprobs']) + '\n')
+        # logfile.write('PREDICTED: %s'%toppreds[i][1] + '\n')
+        # logfile.write(str(topprobs[i][1]) + '\n')
+        logfile.write('PREDICTED: %s'%conddict[it]['b']['toppreds'] + '\n')
+        logfile.write(str(conddict[it]['b']['topprobs']) + '\n')
+        if (a_prob > b_prob):
             pattern.append(1)
             logfile.write('PATTERN\n')
         else:
             pattern.append(0)
-        if (pair[0] and pair[1]) and (abs(pair[0] - pair[1]) < thresh):
-            same.append(1)
-            logfile.write('NO DIFF\n')
+        if (a_prob > b_prob) and (abs(a_prob - b_prob) > thresh):
+            pattern_thresh.append(1)
+            logfile.write('PATTERN THRESH\n')
         else:
-            same.append(0)
+            pattern_thresh.append(0)
+        # if (abs(a_prob - b_prob) < thresh):
+        #     same.append(1)
+        #     logfile.write('NO DIFF\n')
+        # else:
+        #     same.append(0)
         logfile.write('----\n\n\n')
-    probdiffs = [e[0] - e[1] for i,e in enumerate(probpairs)]
-    clozediffs = [e[0] - e[1] for i,e in enumerate(clozepairs)]
-    if scat:
-        plt.scatter(clozediffs,probdiffs)
-        plt.ylabel('Model probability differences',fontsize='x-large')
-        plt.yticks(fontsize='large')
-        plt.xlabel('Cloze differences',fontsize='x-large')
-        plt.xticks(fontsize='large')
-        plt.ylim(-.2,.7)
-        plt.savefig(scat)
-        plt.clf()
+        probpairs.append((a_prob,b_prob))
+        clozepairs.append((conddict[it]['a']['tgtcloze'],conddict[it]['b']['tgtcloze']))
+    probdiffs = [e[0] - e[1] for e in probpairs]
+    clozediffs = [e[0] - e[1] for e in clozepairs]
     avgprobdiff = np.average([e for e in probdiffs if e > 0])
     avgclozediff = np.average([e for e in clozediffs])
+
     report = '\nTarget probs vs cloze:\n'
     if sum(probdiffs) > 0:
         report += 'PEARSON: %s\n'%scipy.stats.pearsonr(probdiffs,clozediffs)[0]
@@ -406,7 +415,20 @@ def sim_rr_N400(clozedict,tok_preds,top_probs,tok_probs,logfile,scat=None,k=5,be
     report += 'AVG PROB DIFF (when good higher): %s\n'%avgprobdiff
     report += 'AVG CLOZE DIFF (for same items): %s\n'%avgclozediff
 
+    if scat:
+        plot_rr_prcl(clozediffs,probdiffs,scat)
+
     return report
+
+def plot_rr_prcl(clozediffs,probdiffs,scat):
+    plt.scatter(clozediffs,probdiffs)
+    plt.ylabel('Model probability differences',fontsize='x-large')
+    plt.yticks(fontsize='large')
+    plt.xlabel('Cloze differences',fontsize='x-large')
+    plt.xticks(fontsize='large')
+    plt.ylim(-.2,.7)
+    plt.savefig(scat)
+    plt.clf()
 
 def test_nkf_acc(nkfdict,inputlist,tgtlist,model,tokenizer,nkflog,k=5,bert=True):
     correct = []
@@ -651,14 +673,14 @@ def run_three_orig(args,models,klist,bert=True):
     #     inputlist,negdict,tgtlist = process_nk(args.nk_stim)
     #     run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,bert=bert)
     #
-    # with open(args.resultsdir+'/results-rr.txt','wb') as out:
-    #     clozedict,inputlist,tgtlist,clozelist = process_rr(args.rr_stim,gen_obj=False,gen_subj=False)
-    #     run_rr_all(args,out,models,'orig',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
+    with open(args.resultsdir+'/results-rr.txt','wb') as out:
+        clozedict,inputlist,tgtlist,clozelist = process_rr(args.rr_stim,gen_obj=False,gen_subj=False)
+        run_rr_all(args,out,models,'orig',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
 
-    with open(args.resultsdir+'/results-fk.txt','wb') as out:
-        hldict,inputlist,_,_,_,tgtlist = process_fk(args.fk_stim)
-        _,_,outstring = run_fk_all(args,out,models,'orig',klist,hldict,inputlist,tgtlist,bert=bert)
-        out.write(outstring)
+    # with open(args.resultsdir+'/results-fk.txt','wb') as out:
+    #     hldict,inputlist,_,_,_,tgtlist = process_fk(args.fk_stim)
+    #     _,_,outstring = run_fk_all(args,out,models,'orig',klist,hldict,inputlist,tgtlist,bert=bert)
+    #     out.write(outstring)
 
 
 if __name__ == "__main__":
