@@ -406,9 +406,9 @@ def test_nkf_acc(nkfdict,inputlist,tgtlist,model,tokenizer,nkflog,k=5,bert=True)
     tok_probs,oov_list = tp.get_probabilities(inputlist,tgtlist,model,tokenizer,bert=bert)
     for i,pred in enumerate(tok_preds):
     # for i,prob in enumerate(tok_probs):
-        clozedict[i]['toppreds'] = pred
-        clozedict[i]['tgtprob'] = tok_probs[i]
-        clozedict[i]['topprobs'] = top_probs[i]
+        nkfdict[i]['toppreds'] = pred
+        nkfdict[i]['tgtprob'] = tok_probs[i]
+        nkfdict[i]['topprobs'] = top_probs[i]
         score = 0
         for subpr in pred:
             rawclozevals = []
@@ -426,7 +426,7 @@ def test_nkf_acc(nkfdict,inputlist,tgtlist,model,tokenizer,nkflog,k=5,bert=True)
             #     print(nkfdict[i]['sent'])
             #     print(nkfdict[i]['exp'])
             #     print(pred)
-    conddict = make_conddict(clozedict)
+    conddict = make_conddict(nkfdict)
     n4report = sim_nkf_N400(conddict,nkflog,k=k,bert=bert)
     report = "\nPrediction 'accuracy':\n"
     report += 'TRUE TGT in top %s preds: %s\n'%(k,get_acc(tot_score))
@@ -452,7 +452,7 @@ def sim_nkf_N400(conddict,logfile,k=5,bert=True):
         # if 'licensing' in conddict[it]['TA']:
         #     licensing.append(conddict[it]['TA']['licensing'])
         #     lictoggle = True
-    thresh = 0
+    # thresh = 0
     pattern = []
     same = []
     preftrue = {'aff':[],'neg':[]}
@@ -464,12 +464,12 @@ def sim_nkf_N400(conddict,logfile,k=5,bert=True):
     preftrue_u = {'aff':[],'neg':[]}
     # preftrue_u[0] = []
     # preftrue_u[1] = []
-    if 'licensing' in conddict['0']['TA']:
-        lic = conddict['0']['TA']['licensing']
-    else: lic = None
+    lic = None
     # for i,pair in enumerate(probpairs):
-    for it in conddict
+    for it in conddict:
         # for j,subpair in enumerate(pair):
+        if 'licensing' in conddict[it]['TA']:
+            lic = conddict[it]['TA']['licensing']
         for true_cond,false_cond,pol in [('TA','FA','aff'),('TN','FN','neg')]:
             true_prob,false_prob = (conddict[it][true_cond]['tgtprob'][0],conddict[it][false_cond]['tgtprob'][0])
             # logfile.write(str(stimpairs[i][j][0]) + '\n')
@@ -578,7 +578,7 @@ def run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,dataname,logcode
                 report,n4report,corr,oov_list = test_nkf_acc(negdict,inputlist,tgtlist,model,tokenizer,nkflog,k=k,bert=bert)
                 # n4report = sim_nkf_N400(fsdict,inputlist,tgtlist,model,tokenizer,fslog,k=k,bert=bert)
                 for crritem in corr:
-                    fslog.write(str(crritem) + '\n')
+                    nkflog.write(str(crritem) + '\n')
                 reports.append((report,n4report,k))
         for acc,n4,k in reports:
             out.write('\n%s k=%s acc\n'%(dataname,k))
