@@ -203,11 +203,6 @@ def test_fk_acc(hldict,inputlist,tgtlist,model,tokenizer,setting,fklog,k=5,bert=
         hldict[i]['toppreds'] = pr
         hldict[i]['tgtprob'] = tok_probs[i]
         hldict[i]['topprobs'] = top_probs[i]
-    # for i,pr in enumerate(tok_preds):
-        # if len(set(hldict[i]['exp']) & set(oov_list)) > 0:
-        #     print('\n\nSKIPPING THIS')
-        #     print(hldict[i]['exp'])
-        #     continue
         score = 0
         for subpr in pr:
             for candidate in subpr:
@@ -229,22 +224,6 @@ def test_fk_acc(hldict,inputlist,tgtlist,model,tokenizer,setting,fklog,k=5,bert=
     return report,n4report,correct,tot_acc,oov_list
 
 def sim_fk_N400(conddict,logfile,setting,k=5,bert=True):
-    # for i,prob in enumerate(tok_probs):
-    #     hldict[i]['tgtprob'] = prob
-    #     hldict[i]['toppreds'] = tok_preds[i]
-    #     hldict[i]['topprobs'] = top_probs[i]
-    # conddict = make_conddict(hldict)
-    # probtrips = []
-    # stimtrips = []
-    # constrips = []
-    # toppreds = []
-    # topprobs = []
-    # for it in conddict:
-    #     probtrips.append((conddict[it]['exp']['tgtprob'][0],conddict[it]['wc']['tgtprob'][0],conddict[it]['bc']['tgtprob'][0]))
-    #     constrips.append(conddict[it]['exp']['constraint'])
-    #     toppreds.append(conddict[it]['exp']['toppreds'])
-    #     topprobs.append(conddict[it]['exp']['topprobs'])
-    #     stimtrips.append(conddict[it]['exp']['sent'][setting] + ' ' + '/'.join([conddict[it]['exp']['tgt'],conddict[it]['wc']['tgt'],conddict[it]['bc']['tgt']]))
     thresh = 0.01
     exp_top = {}
     exp_top['H'] = []
@@ -258,21 +237,13 @@ def sim_fk_N400(conddict,logfile,setting,k=5,bert=True):
     allprobs = {}
     allprobs['H'] = []
     allprobs['L'] = []
-    # for i,pair in enumerate(probtrips):
     for it in conddict:
-        # invoc = (pair[0] and pair[1] and pair[2])
         exp_prob,wc_prob,bc_prob = [conddict[it][cont]['tgtprob'][0] for cont in ['exp','wc','bc']]
-        # logfile.write(u' '.join(stimtrips[i]).encode('utf-8') + '\n')
         logfile.write(conddict[it]['exp']['sent'][setting].encode('utf-8'))
         logfile.write(' ' + '/'.join([conddict[it][cont]['tgt'] for cont in ['exp','wc','bc']]) + '\n')
-        # logfile.write('TGT probs: %s\n'%list(pair))
         logfile.write('TGT probs: %s\n'%[exp_prob,wc_prob,bc_prob])
-        # logfile.write('PREDICTED: %s\n'%toppreds[i])
-        # logfile.write(str(topprobs[i]) + '\n')
-        # logfile.write(constrips[i]+ '\n')
         logfile.write('PREDICTED: %s\n'%conddict[it]['exp']['toppreds'])
         logfile.write(str(conddict[it]['exp']['topprobs']) + '\n')
-        # cons = constrips[i]
         cons = conddict[it]['exp']['constraint']
         logfile.write(cons + '\n')
         allprobs[cons].append((exp_prob,wc_prob,bc_prob))
