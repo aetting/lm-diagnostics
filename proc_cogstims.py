@@ -405,7 +405,6 @@ def test_nkf_acc(nkfdict,inputlist,tgtlist,model,tokenizer,nkflog,k=5,bert=True)
     tok_preds,top_probs = tp.get_predictions(inputlist,model,tokenizer,k=k,bert=bert)
     tok_probs,oov_list = tp.get_probabilities(inputlist,tgtlist,model,tokenizer,bert=bert)
     for i,pred in enumerate(tok_preds):
-    # for i,prob in enumerate(tok_probs):
         nkfdict[i]['toppreds'] = pred
         nkfdict[i]['tgtprob'] = tok_probs[i]
         nkfdict[i]['topprobs'] = top_probs[i]
@@ -421,11 +420,6 @@ def test_nkf_acc(nkfdict,inputlist,tgtlist,model,tokenizer,nkflog,k=5,bert=True)
                 correct.append(ctup)
         if nkfdict[i]['cond'] == 'TA':
             tot_score.append(score)
-            # if not score:
-            #     print('\n\nWRONG')
-            #     print(nkfdict[i]['sent'])
-            #     print(nkfdict[i]['exp'])
-            #     print(pred)
     conddict = make_conddict(nkfdict)
     n4report = sim_nkf_N400(conddict,nkflog,k=k,bert=bert)
     report = "\nPrediction 'accuracy':\n"
@@ -434,54 +428,20 @@ def test_nkf_acc(nkfdict,inputlist,tgtlist,model,tokenizer,nkflog,k=5,bert=True)
     return report,n4report,correct,oov_list
 
 def sim_nkf_N400(conddict,logfile,k=5,bert=True):
-    # for i,prob in enumerate(tok_probs):
-    #     clozedict[i]['tgtprob'] = prob
-    #     clozedict[i]['toppreds'] = tok_preds[i]
-    #     clozedict[i]['topprobs'] = top_probs[i]
-    # conddict = make_conddict(clozedict)
-    # probpairs = []
-    # stimpairs = []
-    # licensing = []
-    # toppreds = []
-    # topprobs = []
-    # for it in conddict:
-    #     probpairs.append([(conddict[it]['TA']['tgtprob'][0],conddict[it]['FA']['tgtprob'][0]),(conddict[it]['TN']['tgtprob'][0],conddict[it]['FN']['tgtprob'][0])])
-    #     toppreds.append([(conddict[it]['TA']['toppreds'],conddict[it]['FA']['toppreds']),(conddict[it]['TN']['toppreds'],conddict[it]['FN']['toppreds'])])
-    #     topprobs.append([(conddict[it]['TA']['topprobs'],conddict[it]['FA']['topprobs']),(conddict[it]['TN']['topprobs'],conddict[it]['FN']['topprobs'])])
-    #     stimpairs.append([(conddict[it]['TA']['sent'] + ' ' + conddict[it]['TA']['tgt'],conddict[it]['FA']['sent'] + ' ' + conddict[it]['FA']['tgt']),(conddict[it]['TN']['sent'] + ' ' + conddict[it]['TN']['tgt'],conddict[it]['FN']['sent'] + ' ' + conddict[it]['FN']['tgt'])])
-        # if 'licensing' in conddict[it]['TA']:
-        #     licensing.append(conddict[it]['TA']['licensing'])
-        #     lictoggle = True
-    # thresh = 0
     pattern = []
     same = []
     preftrue = {'aff':[],'neg':[]}
-    # preftrue[0] = []
-    # preftrue[1] = []
     preftrue_l = {'aff':[],'neg':[]}
-    # preftrue_l[0] = []
-    # preftrue_l[1] = []
     preftrue_u = {'aff':[],'neg':[]}
-    # preftrue_u[0] = []
-    # preftrue_u[1] = []
     lic = None
-    # for i,pair in enumerate(probpairs):
     for it in conddict:
-        # for j,subpair in enumerate(pair):
         if 'licensing' in conddict[it]['TA']:
             lic = conddict[it]['TA']['licensing']
         for true_cond,false_cond,pol in [('TA','FA','aff'),('TN','FN','neg')]:
             true_prob,false_prob = (conddict[it][true_cond]['tgtprob'][0],conddict[it][false_cond]['tgtprob'][0])
-            # logfile.write(str(stimpairs[i][j][0]) + '\n')
             logfile.write(str(conddict[it][true_cond]['sent'] + ' ' + conddict[it][true_cond]['tgt']) + '\n')
-            # logfile.write(str(stimpairs[i][j][1]) + '\n')
             logfile.write(str(conddict[it][false_cond]['sent'] + ' ' + conddict[it][false_cond]['tgt']) + '\n')
-            # logfile.write(u'TGT probs: %s\n'%list(subpair))
             logfile.write(u'TGT probs: %s\n'%[true_prob,false_prob])
-            # logfile.write(u'PREDICTED: %s'%toppreds[i][j][0] + '\n')
-            # logfile.write(str(topprobs[i][j][0]) + '\n')
-            # logfile.write(u'PREDICTED: %s'%toppreds[i][j][1] + '\n')
-            # logfile.write(str(topprobs[i][j][1]) + '\n')
             logfile.write(u'PREDICTED: %s'%conddict[it][true_cond]['toppreds'] + '\n')
             logfile.write(str(conddict[it][true_cond]['topprobs']) + '\n')
             logfile.write(u'PREDICTED: %s'%conddict[it][false_cond]['toppreds'] + '\n')
@@ -500,7 +460,6 @@ def sim_nkf_N400(conddict,logfile,k=5,bert=True):
                 else:
                     print('LICENSING ERROR')
 
-    # probdiffs = [e[0] - e[1] for i,e in enumerate(probpairs) if e[0] and e[1]]
     report = '\nPreference for true vs false sentences:\n'
     report += 'PREF TRUE: %s\n'%get_acc(preftrue['aff'] + preftrue['neg'])
     report += 'AFF: %s\n'%get_acc(preftrue['aff'])
