@@ -279,54 +279,50 @@ def test_rr_acc(clozedict,inputlist,tgtlist,clozelist,model,tokenizer,rrlog,k=5,
     tok_probs,oov_list = tp.get_probabilities(inputlist,tgtlist,model,tokenizer,bert=bert)
     tot_score = []
     correct = []
-    q1_corr = []
-    q2_corr = []
-    q3_corr = []
-    q4_corr = []
+    correct_by_quartile = {'q1_corr':[],'q2_corr':[],'q3_corr':[],'q4_corr':[]}
+    # q1_corr = []
+    # q2_corr = []
+    # q3_corr = []
+    # q4_corr = []
     avgcloze = np.average(clozelist)
     q1 = np.percentile(clozelist,25)
     q3 = np.percentile(clozelist,75)
     q2 = np.percentile(clozelist,50)
     q4 = max(clozelist)
     predcounts = Counter()
-    # for i,pred in enumerate(tok_preds):
     for i,pred in enumerate(tok_preds):
         clozedict[i]['toppreds'] = pred
         clozedict[i]['tgtprob'] = tok_probs[i]
         clozedict[i]['topprobs'] = top_probs[i]
         score = 0
-        # print(clozedict[i]['sent'])
         itm = clozedict[i]['item']
         cond = clozedict[i]['cond']
         for subpr in pred:
             predcounts.update(subpr)
-            # print(subpr)
-            # print(clozedict[i]['exp'])
             for candidate in subpr:
                 if candidate.strip() in [e.split()[0] for e in clozedict[i]['exp']]:
                     score = 1
-                    # print('WINNER\n')
         if score == 1:
             ctup = (clozedict[i]['sent'],clozedict[i]['exp'],pred,clozedict[i]['maxcloze'])
             if ctup not in correct:
                 correct.append(ctup)
         tot_score.append(score)
         if clozedict[i]['maxcloze'] <= q1:
-            q1_corr.append(score)
+            correct_by_quartile['q1_corr'].append(score)
         elif clozedict[i]['maxcloze'] <= q2:
-            q2_corr.append(score)
+            correct_by_quartile['q2_corr'].append(score)
         elif clozedict[i]['maxcloze'] <= q3:
-            q3_corr.append(score)
+            correct_by_quartile['q3_corr'].append(score)
         else:
-            q4_corr.append(score)
+            correct_by_quartile['q4_corr'].append(score)
     conddict = make_conddict(clozedict)
     n4report = sim_rr_N400(conddict,rrlog,scat=scat,k=k,bert=bert)
     report = '\nPrediction accuracies:\n'
     report += 'TGT in top %s preds: %s\n'%(k,get_acc(tot_score))
-    report += 'TGT in top %s for Q1: %s (%s upper, %s items)\n'%(k,get_acc(q1_corr),q1,len(q1_corr))
-    report += 'TGT in top %s for Q2: %s (%s upper, %s items)\n'%(k,get_acc(q2_corr),q2,len(q2_corr))
-    report += 'TGT in top %s for Q3: %s (%s upper, %s items)\n'%(k,get_acc(q3_corr),q3,len(q3_corr))
-    report += 'TGT in top %s for Q4: %s (%s upper, %s items)\n'%(k,get_acc(q4_corr),q4,len(q4_corr))
+    report += 'TGT in top %s for Q1: %s (%s upper, %s items)\n'%(k,get_acc(correct_by_quartile['q1_corr']),q1,len(correct_by_quartile['q1_corr']))
+    report += 'TGT in top %s for Q2: %s (%s upper, %s items)\n'%(k,get_acc(correct_by_quartile['q2_corr']),q2,len(correct_by_quartile['q2_corr']))
+    report += 'TGT in top %s for Q3: %s (%s upper, %s items)\n'%(k,get_acc(correct_by_quartile['q3_corr']),q3,len(correct_by_quartile['q3_corr']))
+    report += 'TGT in top %s for Q4: %s (%s upper, %s items)\n'%(k,get_acc(correct_by_quartile['q4_corr']),q4,len(correct_by_quartile['q4_corr']))
     report += 'AVG CLOZE: %s\n'%avgcloze
     report += 'MED CLOZE: %s\n'%q2
     return report,n4report,correct,predcounts,oov_list
@@ -502,7 +498,7 @@ def run_fk_all(args,out,models,logcode,klist,hldict,inputlist,tgtlist,bert=True)
     return acclist,acclist_names,outstring
 
 
-def run_rr_all(args,out,models,logcode,klist,clozedict,inputlist,tgtlist,clozelist,bert=True,gen_obj=False,gen_subj=False):
+def run_rr_all(args,out,models,logcode,klist,clozedict,inputlist,tgtlist,clozelist,bert=True):
     out.write('\n\n***\nSETTING: %s\n***\n\n'%logcode)
     for modelname,model,tokenizer in models:
         out.write('\n\n***\nMODEL: %s\n***\n'%modelname)
@@ -566,7 +562,7 @@ def run_aux_tests(args,models,klist,bert=True):
         out.write(outstring)
         _,_,outstring = run_fk_all(args,out,models,'nw',klist,hldict,inputlist_nw,tgtlist,bert=bert)
         out.write(outstring)
-        for i in range(3):
+        for i in range(100):
             _,_,inputlist_shuf,_,inputlist_shufnw,_ = process_fk(args.fk_stim)
             acclist,acclist_names_shuf,_ = run_fk_all(args,out,models,'shuf',klist,hldict,inputlist_shuf,tgtlist,bert=bert)
             acclists_shuf.append(acclist)
@@ -596,14 +592,21 @@ def run_aux_tests(args,models,klist,bert=True):
                 out.write('%s k=%s: %s pm %s\n'%(modelname,k,np.average(this_accs),np.std(this_accs)))
                 i += 1
 
-    # with open(args.resultsdir+'/results-rr.txt','wb') as out:
-    #     run_rr_all(args,out,models,'orig',klist,bert=bert,gen_obj=False,gen_subj=False)
-    #     run_rr_all(args,out,models,'obj',klist,bert=bert,gen_obj=True,gen_subj=False)
-    #     run_rr_all(args,out,models,'subj',klist,bert=bert,gen_obj=False,gen_subj=True)
-    #     run_rr_all(args,out,models,'obsub',klist,bert=bert,gen_obj=True,gen_subj=True)
-    #
-    # with open(args.resultsdir+'/results-neg.txt','wb') as out:
-    #     run_neg_all(args,out,models,klist,bert=bert)
+    with open(args.resultsdir+'/results-rr.txt','wb') as out:
+        clozedict,inputlist,tgtlist,clozelist = process_rr(args.rr_stim,gen_obj=False,gen_subj=False)
+        run_rr_all(args,out,models,'orig',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
+        clozedict,inputlist,tgtlist,clozelist = process_rr(args.rr_stim,gen_obj=True,gen_subj=False)
+        run_rr_all(args,out,models,'obj',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
+        clozedict,inputlist,tgtlist,clozelist = process_rr(args.rr_stim,gen_obj=False,gen_subj=True)
+        run_rr_all(args,out,models,'subj',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
+        clozedict,inputlist,tgtlist,clozelist = process_rr(args.rr_stim,gen_obj=True,gen_subj=True)
+        run_rr_all(args,out,models,'obsub',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
+
+    with open(args.resultsdir+'/results-neg.txt','wb') as out:
+        inputlist,negdict,tgtlist = process_fischler(args.fisch_stim)
+        run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,'FISCHLER','FS',bert=bert)
+        inputlist,negdict,tgtlist = process_nk(args.nk_stim)
+        run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,'NIEUWLAND','NK',bert=bert)
 
 #runs all three datasets without any perturbations from paper
 def run_three_orig(args,models,klist,bert=True):
@@ -612,15 +615,15 @@ def run_three_orig(args,models,klist,bert=True):
         run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,'FISCHLER','FS',bert=bert)
         inputlist,negdict,tgtlist = process_nk(args.nk_stim)
         run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,'NIEUWLAND','NK',bert=bert)
-    #
-    # with open(args.resultsdir+'/results-rr.txt','wb') as out:
-    #     clozedict,inputlist,tgtlist,clozelist = process_rr(args.rr_stim,gen_obj=False,gen_subj=False)
-    #     run_rr_all(args,out,models,'orig',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
 
-    # with open(args.resultsdir+'/results-fk.txt','wb') as out:
-    #     hldict,inputlist,_,_,_,tgtlist = process_fk(args.fk_stim)
-    #     _,_,outstring = run_fk_all(args,out,models,'orig',klist,hldict,inputlist,tgtlist,bert=bert)
-    #     out.write(outstring)
+    with open(args.resultsdir+'/results-rr.txt','wb') as out:
+        clozedict,inputlist,tgtlist,clozelist = process_rr(args.rr_stim,gen_obj=False,gen_subj=False)
+        run_rr_all(args,out,models,'orig',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
+
+    with open(args.resultsdir+'/results-fk.txt','wb') as out:
+        hldict,inputlist,_,_,_,tgtlist = process_fk(args.fk_stim)
+        _,_,outstring = run_fk_all(args,out,models,'orig',klist,hldict,inputlist,tgtlist,bert=bert)
+        out.write(outstring)
 
 
 if __name__ == "__main__":
@@ -647,15 +650,15 @@ if __name__ == "__main__":
 
     print('LOADING MODELS')
     bert_base,tokenizer_base = tp.load_model(args.bertbase)
-    # bert_large,tokenizer_large = tp.load_model(args.bertlarge)
+    bert_large,tokenizer_large = tp.load_model(args.bertlarge)
 
 
-    klist = [5]
+    klist = [1,5]
 
-    # models = [('bert-base-uncased',bert_base,tokenizer_base),('bert-large-uncased',bert_large,tokenizer_large)]
-    models = [('bert-base-uncased',bert_base,tokenizer_base)]
+    models = [('bert-base-uncased',bert_base,tokenizer_base),('bert-large-uncased',bert_large,tokenizer_large)]
+    # models = [('bert-base-uncased',bert_base,tokenizer_base)]
     # models = []
 
     print('RUNNING EXPERIMENTS')
-    run_three_orig(args,models,klist,bert=True)
-    # run_aux_tests(args,models,klist,bert=True)
+    # run_three_orig(args,models,klist,bert=True)
+    run_aux_tests(args,models,klist,bert=True)
