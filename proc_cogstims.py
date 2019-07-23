@@ -291,8 +291,8 @@ def test_rr_acc(clozedict,inputlist,tgtlist,clozelist,model,tokenizer,rrlog,k=5,
     predcounts = Counter()
     # for i,pred in enumerate(tok_preds):
     for i,pred in enumerate(tok_preds):
+        clozedict[i]['toppreds'] = pred
         clozedict[i]['tgtprob'] = tok_probs[i]
-        clozedict[i]['toppreds'] = tok_preds[i]
         clozedict[i]['topprobs'] = top_probs[i]
         score = 0
         # print(clozedict[i]['sent'])
@@ -405,6 +405,10 @@ def test_nkf_acc(nkfdict,inputlist,tgtlist,model,tokenizer,nkflog,k=5,bert=True)
     tok_preds,top_probs = tp.get_predictions(inputlist,model,tokenizer,k=k,bert=bert)
     tok_probs,oov_list = tp.get_probabilities(inputlist,tgtlist,model,tokenizer,bert=bert)
     for i,pred in enumerate(tok_preds):
+    # for i,prob in enumerate(tok_probs):
+        clozedict[i]['toppreds'] = pred
+        clozedict[i]['tgtprob'] = tok_probs[i]
+        clozedict[i]['topprobs'] = top_probs[i]
         score = 0
         for subpr in pred:
             rawclozevals = []
@@ -417,88 +421,97 @@ def test_nkf_acc(nkfdict,inputlist,tgtlist,model,tokenizer,nkflog,k=5,bert=True)
                 correct.append(ctup)
         if nkfdict[i]['cond'] == 'TA':
             tot_score.append(score)
-            if not score:
-                print('\n\nWRONG')
-                print(nkfdict[i]['sent'])
-                print(nkfdict[i]['exp'])
-                print(pred)
-
-    n4report = sim_nkf_N400(nkfdict,tok_preds,top_probs,tok_probs,nkflog,k=k,bert=bert)
+            # if not score:
+            #     print('\n\nWRONG')
+            #     print(nkfdict[i]['sent'])
+            #     print(nkfdict[i]['exp'])
+            #     print(pred)
+    conddict = make_conddict(clozedict)
+    n4report = sim_nkf_N400(conddict,nkflog,k=k,bert=bert)
     report = "\nPrediction 'accuracy':\n"
     report += 'TRUE TGT in top %s preds: %s\n'%(k,get_acc(tot_score))
 
-
     return report,n4report,correct,oov_list
 
-def sim_nkf_N400(clozedict,tok_preds,top_probs,tok_probs,logfile,k=5,bert=True):
-    for i,prob in enumerate(tok_probs):
-        clozedict[i]['tgtprob'] = prob
-        clozedict[i]['toppreds'] = tok_preds[i]
-        clozedict[i]['topprobs'] = top_probs[i]
-    conddict = make_conddict(clozedict)
-    probpairs = []
-    stimpairs = []
-    licensing = []
-    lictoggle = False
-    toppreds = []
-    topprobs = []
-    for it in conddict:
-        probpairs.append([(conddict[it]['TA']['tgtprob'][0],conddict[it]['FA']['tgtprob'][0]),(conddict[it]['TN']['tgtprob'][0],conddict[it]['FN']['tgtprob'][0])])
-        toppreds.append([(conddict[it]['TA']['toppreds'],conddict[it]['FA']['toppreds']),(conddict[it]['TN']['toppreds'],conddict[it]['FN']['toppreds'])])
-        topprobs.append([(conddict[it]['TA']['topprobs'],conddict[it]['FA']['topprobs']),(conddict[it]['TN']['topprobs'],conddict[it]['FN']['topprobs'])])
-        stimpairs.append([(conddict[it]['TA']['sent'] + ' ' + conddict[it]['TA']['tgt'],conddict[it]['FA']['sent'] + ' ' + conddict[it]['FA']['tgt']),(conddict[it]['TN']['sent'] + ' ' + conddict[it]['TN']['tgt'],conddict[it]['FN']['sent'] + ' ' + conddict[it]['FN']['tgt'])])
-        if 'licensing' in conddict[it]['TA']:
-            licensing.append(conddict[it]['TA']['licensing'])
-            lictoggle = True
+def sim_nkf_N400(conddict,logfile,k=5,bert=True):
+    # for i,prob in enumerate(tok_probs):
+    #     clozedict[i]['tgtprob'] = prob
+    #     clozedict[i]['toppreds'] = tok_preds[i]
+    #     clozedict[i]['topprobs'] = top_probs[i]
+    # conddict = make_conddict(clozedict)
+    # probpairs = []
+    # stimpairs = []
+    # licensing = []
+    # toppreds = []
+    # topprobs = []
+    # for it in conddict:
+    #     probpairs.append([(conddict[it]['TA']['tgtprob'][0],conddict[it]['FA']['tgtprob'][0]),(conddict[it]['TN']['tgtprob'][0],conddict[it]['FN']['tgtprob'][0])])
+    #     toppreds.append([(conddict[it]['TA']['toppreds'],conddict[it]['FA']['toppreds']),(conddict[it]['TN']['toppreds'],conddict[it]['FN']['toppreds'])])
+    #     topprobs.append([(conddict[it]['TA']['topprobs'],conddict[it]['FA']['topprobs']),(conddict[it]['TN']['topprobs'],conddict[it]['FN']['topprobs'])])
+    #     stimpairs.append([(conddict[it]['TA']['sent'] + ' ' + conddict[it]['TA']['tgt'],conddict[it]['FA']['sent'] + ' ' + conddict[it]['FA']['tgt']),(conddict[it]['TN']['sent'] + ' ' + conddict[it]['TN']['tgt'],conddict[it]['FN']['sent'] + ' ' + conddict[it]['FN']['tgt'])])
+        # if 'licensing' in conddict[it]['TA']:
+        #     licensing.append(conddict[it]['TA']['licensing'])
+        #     lictoggle = True
+    thresh = 0
     pattern = []
     same = []
-    thresh = 0
-    preftrue = {}
-    preftrue[0] = []
-    preftrue[1] = []
-    preftrue_l = {}
-    preftrue_l[0] = []
-    preftrue_l[1] = []
-    preftrue_u = {}
-    preftrue_u[0] = []
-    preftrue_u[1] = []
-    for i,pair in enumerate(probpairs):
-        if lictoggle:
-            lic = licensing[i]
-        for j,subpair in enumerate(pair):
-            logfile.write(str(stimpairs[i][j][0]) + '\n')
-            logfile.write(str(stimpairs[i][j][1]) + '\n')
-            logfile.write(u'TGT probs: %s\n'%list(subpair))
-            logfile.write(u'PREDICTED: %s'%toppreds[i][j][0] + '\n')
-            logfile.write(str(topprobs[i][j][0]) + '\n')
-            logfile.write(u'PREDICTED: %s'%toppreds[i][j][1] + '\n')
-            logfile.write(str(topprobs[i][j][1]) + '\n')
+    preftrue = {'aff':[],'neg':[]}
+    # preftrue[0] = []
+    # preftrue[1] = []
+    preftrue_l = {'aff':[],'neg':[]}
+    # preftrue_l[0] = []
+    # preftrue_l[1] = []
+    preftrue_u = {'aff':[],'neg':[]}
+    # preftrue_u[0] = []
+    # preftrue_u[1] = []
+    if 'licensing' in conddict['0']['TA']:
+        lic = conddict['0']['TA']['licensing']
+    else: lic = None
+    # for i,pair in enumerate(probpairs):
+    for it in conddict
+        # for j,subpair in enumerate(pair):
+        for true_cond,false_cond,pol in [('TA','FA','aff'),('TN','FN','neg')]:
+            true_prob,false_prob = (conddict[it][true_cond]['tgtprob'][0],conddict[it][false_cond]['tgtprob'][0])
+            # logfile.write(str(stimpairs[i][j][0]) + '\n')
+            logfile.write(str(conddict[it][true_cond]['sent'] + ' ' + conddict[it][true_cond]['tgt']) + '\n')
+            # logfile.write(str(stimpairs[i][j][1]) + '\n')
+            logfile.write(str(conddict[it][false_cond]['sent'] + ' ' + conddict[it][false_cond]['tgt']) + '\n')
+            # logfile.write(u'TGT probs: %s\n'%list(subpair))
+            logfile.write(u'TGT probs: %s\n'%[true_prob,false_prob])
+            # logfile.write(u'PREDICTED: %s'%toppreds[i][j][0] + '\n')
+            # logfile.write(str(topprobs[i][j][0]) + '\n')
+            # logfile.write(u'PREDICTED: %s'%toppreds[i][j][1] + '\n')
+            # logfile.write(str(topprobs[i][j][1]) + '\n')
+            logfile.write(u'PREDICTED: %s'%conddict[it][true_cond]['toppreds'] + '\n')
+            logfile.write(str(conddict[it][true_cond]['topprobs']) + '\n')
+            logfile.write(u'PREDICTED: %s'%conddict[it][false_cond]['toppreds'] + '\n')
+            logfile.write(str(conddict[it][false_cond]['topprobs']) + '\n')
             logfile.write(u'---\n\n\n')
-            if subpair[0] > subpair[1]:
+            if true_prob > false_prob:
                 score = 1
             else:
                 score = 0
-            preftrue[j].append(score)
-            if lictoggle:
+            preftrue[pol].append(score)
+            if lic:
                 if lic == 'Y':
-                    preftrue_l[j].append(score)
+                    preftrue_l[pol].append(score)
                 elif lic == 'N':
-                    preftrue_u[j].append(score)
+                    preftrue_u[pol].append(score)
                 else:
-                    print('WRONG')
+                    print('LICENSING ERROR')
 
     # probdiffs = [e[0] - e[1] for i,e in enumerate(probpairs) if e[0] and e[1]]
     report = '\nPreference for true vs false sentences:\n'
-    report += 'PREF TRUE: %s\n'%get_acc(preftrue[0] + preftrue[1])
-    report += 'AFF: %s\n'%get_acc(preftrue[0])
-    report += 'NEG: %s\n'%get_acc(preftrue[1])
-    if lictoggle:
-        report += 'PREF TRUE LICENSED: %s\n'%get_acc(preftrue_l[0] + preftrue_l[1])
-        report += 'AFF: %s\n'%get_acc(preftrue_l[0])
-        report += 'NEG: %s\n'%get_acc(preftrue_l[1])
-        report += 'PREF TRUE UNLICENSED: %s\n'%get_acc(preftrue_u[0] + preftrue_u[1])
-        report += 'AFF: %s\n'%get_acc(preftrue_u[0])
-        report += 'NEG: %s\n'%get_acc(preftrue_u[1])
+    report += 'PREF TRUE: %s\n'%get_acc(preftrue['aff'] + preftrue['neg'])
+    report += 'AFF: %s\n'%get_acc(preftrue['aff'])
+    report += 'NEG: %s\n'%get_acc(preftrue['neg'])
+    if lic:
+        report += 'PREF TRUE LICENSED: %s\n'%get_acc(preftrue_l['aff'] + preftrue_l['neg'])
+        report += 'AFF: %s\n'%get_acc(preftrue_l['aff'])
+        report += 'NEG: %s\n'%get_acc(preftrue_l['neg'])
+        report += 'PREF TRUE UNLICENSED: %s\n'%get_acc(preftrue_u['aff'] + preftrue_u['neg'])
+        report += 'AFF: %s\n'%get_acc(preftrue_u['aff'])
+        report += 'NEG: %s\n'%get_acc(preftrue_u['neg'])
     report += '\n\n'
 
     return report
@@ -554,24 +567,23 @@ def run_rr_all(args,out,models,logcode,klist,clozedict,inputlist,tgtlist,clozeli
     return report,n4report
 
 
-def run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,bert=True):
+def run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,dataname,logcode,bert=True):
 
     for modelname,model,tokenizer in models:
         out.write('\n\n***\nMODEL: %s\n***\n'%modelname)
         print(modelname)
         reports = []
         for k in klist:
-            with open(args.resultsdir+'/FS_predlog_%s-%s'%(modelname,k),'wb') as fslog:
-                print('FISCHLER k=%s\n'%k)
-                report,n4report,corr,oov_list = test_nkf_acc(negdict,inputlist,tgtlist,model,tokenizer,fslog,k=k,bert=bert)
+            with open(args.resultsdir+'/%s_predlog_%s-%s'%(logcode,modelname,k),'wb') as nkflog:
+                report,n4report,corr,oov_list = test_nkf_acc(negdict,inputlist,tgtlist,model,tokenizer,nkflog,k=k,bert=bert)
                 # n4report = sim_nkf_N400(fsdict,inputlist,tgtlist,model,tokenizer,fslog,k=k,bert=bert)
                 for crritem in corr:
                     fslog.write(str(crritem) + '\n')
                 reports.append((report,n4report,k))
         for acc,n4,k in reports:
-            out.write('\nFISCHLER k=%s acc\n'%k)
+            out.write('\n%s k=%s acc\n'%(dataname,k))
             out.write(acc)
-        out.write('\nFISCHLER N400\n')
+        out.write('\n%s N400\n'%dataname)
         out.write(n4)
         out.write('\n----\n\n')
 
@@ -636,15 +648,15 @@ def run_aux_tests(args,models,klist,bert=True):
 
 #runs all three datasets without any perturbations from paper
 def run_three_orig(args,models,klist,bert=True):
-    # with open(args.resultsdir+'/results-neg.txt','wb') as out:
-    #     inputlist,negdict,tgtlist = process_fischler(args.fisch_stim)
-    #     run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,bert=bert)
-    #     inputlist,negdict,tgtlist = process_nk(args.nk_stim)
-    #     run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,bert=bert)
+    with open(args.resultsdir+'/results-neg.txt','wb') as out:
+        inputlist,negdict,tgtlist = process_fischler(args.fisch_stim)
+        run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,'FISCHLER','FS',bert=bert)
+        inputlist,negdict,tgtlist = process_nk(args.nk_stim)
+        run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,'NIEUWLAND','NK',bert=bert)
     #
-    with open(args.resultsdir+'/results-rr.txt','wb') as out:
-        clozedict,inputlist,tgtlist,clozelist = process_rr(args.rr_stim,gen_obj=False,gen_subj=False)
-        run_rr_all(args,out,models,'orig',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
+    # with open(args.resultsdir+'/results-rr.txt','wb') as out:
+    #     clozedict,inputlist,tgtlist,clozelist = process_rr(args.rr_stim,gen_obj=False,gen_subj=False)
+    #     run_rr_all(args,out,models,'orig',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
 
     # with open(args.resultsdir+'/results-fk.txt','wb') as out:
     #     hldict,inputlist,_,_,_,tgtlist = process_fk(args.fk_stim)
