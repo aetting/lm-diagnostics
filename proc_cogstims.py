@@ -332,51 +332,20 @@ def test_rr_acc(clozedict,inputlist,tgtlist,clozelist,model,tokenizer,rrlog,k=5,
     return report,n4report,correct,predcounts,oov_list
 
 def sim_rr_N400(conddict,logfile,scat=None,k=5,bert=True):
-    # for i,prob in enumerate(tok_probs):
-    #     clozedict[i]['tgtprob'] = prob
-    #     clozedict[i]['toppreds'] = tok_preds[i]
-    #     clozedict[i]['topprobs'] = top_probs[i]
-    # conddict = make_conddict(clozedict)
-    # probpairs = []
-    # stimpairs = []
-    # clozepairs = []
-    # toppreds = []
-    # topprobs = []
-    # for it in conddict:
-    #     probpairs.append((conddict[it]['a']['tgtprob'][0],conddict[it]['b']['tgtprob'][0]))
-    #     clozepairs.append((conddict[it]['a']['tgtcloze'],conddict[it]['b']['tgtcloze']))
-    #     toppreds.append((conddict[it]['a']['toppreds'],conddict[it]['b']['toppreds']))
-    #     topprobs.append((conddict[it]['a']['topprobs'],conddict[it]['b']['topprobs']))
-    #     stimpairs.append((conddict[it]['a']['sent'] + ' ' + conddict[it]['a']['tgt'],conddict[it]['b']['sent'] + ' ' + conddict[it]['b']['tgt']))
-        # if 'c' in conddict[it]:
-        #     probpairs.append((conddict[it]['d']['tgtprob'][0],conddict[it]['c']['tgtprob'][0]))
-        #     clozepairs.append((conddict[it]['d']['tgtcloze'],conddict[it]['c']['tgtcloze']))
-        #     toppreds.append((conddict[it]['d']['toppreds'],conddict[it]['c']['toppreds']))
-        #     topprobs.append((conddict[it]['d']['topprobs'],conddict[it]['c']['topprobs']))
-        #     stimpairs.append((conddict[it]['d']['sent'] + ' ' + conddict[it]['d']['tgt'],conddict[it]['c']['sent'] + ' ' + conddict[it]['c']['tgt']))
     thresh = .01
     pattern = []
     pattern_thresh = []
-    # same = []
-    # for i,pair in enumerate(probpairs):
+    same = []
     probpairs = []
     clozepairs = []
     for it in conddict:
         a_prob,b_prob = (conddict[it]['a']['tgtprob'][0],conddict[it]['b']['tgtprob'][0])
-        # logfile.write(str(stimpairs[i][0]) + '\n')
-        # logfile.write(str(stimpairs[i][1]) + '\n')
         logfile.write(conddict[it]['a']['sent'] + '   ' + conddict[it]['a']['tgt'] + '\n')
         logfile.write(conddict[it]['b']['sent'] + '   ' + conddict[it]['b']['tgt'] + '\n')
-        # logfile.write('TGT probs: %s\n'%list(pair))
         logfile.write('TGT probs: %s\n'%[a_prob,b_prob])
-        # logfile.write('TGT cloze: %s\n'%list(clozepairs[i]))
         logfile.write('TGT cloze: %s\n'%[conddict[it]['a']['tgtcloze'],conddict[it]['b']['tgtcloze']])
-        # logfile.write('PREDICTED: %s'%toppreds[i][0] + '\n')
-        # logfile.write(str(topprobs[i][0]) + '\n')
         logfile.write('PREDICTED: %s'%conddict[it]['a']['toppreds'] + '\n')
         logfile.write(str(conddict[it]['a']['topprobs']) + '\n')
-        # logfile.write('PREDICTED: %s'%toppreds[i][1] + '\n')
-        # logfile.write(str(topprobs[i][1]) + '\n')
         logfile.write('PREDICTED: %s'%conddict[it]['b']['toppreds'] + '\n')
         logfile.write(str(conddict[it]['b']['topprobs']) + '\n')
         if (a_prob > b_prob):
@@ -389,11 +358,11 @@ def sim_rr_N400(conddict,logfile,scat=None,k=5,bert=True):
             logfile.write('PATTERN THRESH\n')
         else:
             pattern_thresh.append(0)
-        # if (abs(a_prob - b_prob) < thresh):
-        #     same.append(1)
-        #     logfile.write('NO DIFF\n')
-        # else:
-        #     same.append(0)
+        if (abs(a_prob - b_prob) < thresh):
+            same.append(1)
+            logfile.write('NO DIFF\n')
+        else:
+            same.append(0)
         logfile.write('----\n\n\n')
         probpairs.append((a_prob,b_prob))
         clozepairs.append((conddict[it]['a']['tgtcloze'],conddict[it]['b']['tgtcloze']))
