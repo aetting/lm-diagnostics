@@ -225,18 +225,10 @@ def test_fk_acc(hldict,inputlist,tgtlist,model,tokenizer,setting,fklog,k=5,bert=
 
 def sim_fk_N400(conddict,logfile,setting,k=5,bert=True):
     thresh = 0.01
-    exp_top = {}
-    exp_top['H'] = []
-    exp_top['L'] = []
-    exp_top_thresh = {}
-    exp_top_thresh['H'] = []
-    exp_top_thresh['L'] = []
-    wc_boost = {}
-    wc_boost['H'] = []
-    wc_boost['L'] = []
-    allprobs = {}
-    allprobs['H'] = []
-    allprobs['L'] = []
+    exp_top = {'H':[],'L':[]}
+    exp_top_thresh = {'H':[],'L':[]}
+    wc_boost = {'H':[],'L':[]}
+    allprobs = {'H':[],'L':[]}
     for it in conddict:
         exp_prob,wc_prob,bc_prob = [conddict[it][cont]['tgtprob'][0] for cont in ['exp','wc','bc']]
         logfile.write(conddict[it]['exp']['sent'][setting].encode('utf-8'))
