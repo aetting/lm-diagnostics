@@ -364,8 +364,6 @@ def sim_rr_N400(conddict,logfile,scat=None,k=5,bert=True):
         clozepairs.append((conddict[it]['a']['tgtcloze'],conddict[it]['b']['tgtcloze']))
     probdiffs = [e[0] - e[1] for e in probpairs]
     clozediffs = [e[0] - e[1] for e in clozepairs]
-    avgprobdiff = np.average([e for e in probdiffs if e > 0])
-    avgclozediff = np.average([e for e in clozediffs])
 
     report = '\nTarget probs vs cloze:\n'
     if sum(probdiffs) > 0:
@@ -377,8 +375,8 @@ def sim_rr_N400(conddict,logfile,scat=None,k=5,bert=True):
     report += 'GOOD TGT HIGHER: %s\n'%get_acc(pattern)
     report += 'GOOD TGT HIGHER BY %s: %s\n'%(thresh,get_acc(pattern_thresh))
     report += 'DIFF BELOW THRESH %s: %s\n'%(thresh,get_acc(same))
-    report += 'AVG PROB DIFF (when good higher): %s\n'%avgprobdiff
-    report += 'AVG CLOZE DIFF (for same items): %s\n'%avgclozediff
+    report += 'AVG PROB DIFF: %s\n'%np.average(probdiffs)
+    report += 'AVG CLOZE DIFF: %s\n'%np.average(clozediffs)
 
     if scat:
         plot_rr_prcl(clozediffs,probdiffs,scat)
@@ -429,7 +427,9 @@ def sim_nkf_N400(conddict,logfile,k=5,bert=True):
     preftrue = {'aff':[],'neg':[]}
     preftrue_l = {'aff':[],'neg':[]}
     preftrue_u = {'aff':[],'neg':[]}
+    preftrue_thresh = {'aff':[],'neg':[]}
     lic = None
+    thresh = .01
     for it in conddict:
         if 'licensing' in conddict[it]['TA']:
             lic = conddict[it]['TA']['licensing']
@@ -455,11 +455,18 @@ def sim_nkf_N400(conddict,logfile,k=5,bert=True):
                     preftrue_u[pol].append(score)
                 else:
                     print('LICENSING ERROR')
+            if (true_prob > false_prob) and (abs(true_prob - false_prob) > thresh):
+                preftrue_thresh[pol].append(1)
+            else:
+                preftrue_thresh[pol].append(0)
+
 
     report = '\nPreference for true vs false sentences:\n'
     report += 'PREF TRUE: %s\n'%get_acc(preftrue['aff'] + preftrue['neg'])
     report += 'AFF: %s\n'%get_acc(preftrue['aff'])
     report += 'NEG: %s\n'%get_acc(preftrue['neg'])
+    report += 'PREF TRUE AFF THRESH %s: %s (%s/%s)\n'%(thresh,get_acc(preftrue_thresh['aff']),sum(preftrue_thresh['aff']),len(preftrue_thresh['aff']))
+    report += 'PREF TRUE NEG THRESH %s: %s (%s/%s)\n'%(thresh,get_acc(preftrue_thresh['neg']),sum(preftrue_thresh['neg']),len(preftrue_thresh['neg']))
     if lic:
         report += 'PREF TRUE LICENSED: %s\n'%get_acc(preftrue_l['aff'] + preftrue_l['neg'])
         report += 'AFF: %s\n'%get_acc(preftrue_l['aff'])
@@ -616,14 +623,14 @@ def run_three_orig(args,models,klist,bert=True):
         inputlist,negdict,tgtlist = process_nk(args.nk_stim)
         run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,'NIEUWLAND','NK',bert=bert)
 
-    with open(args.resultsdir+'/results-rr.txt','wb') as out:
-        clozedict,inputlist,tgtlist,clozelist = process_rr(args.rr_stim,gen_obj=False,gen_subj=False)
-        run_rr_all(args,out,models,'orig',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
-
-    with open(args.resultsdir+'/results-fk.txt','wb') as out:
-        hldict,inputlist,_,_,_,tgtlist = process_fk(args.fk_stim)
-        _,_,outstring = run_fk_all(args,out,models,'orig',klist,hldict,inputlist,tgtlist,bert=bert)
-        out.write(outstring)
+    # with open(args.resultsdir+'/results-rr.txt','wb') as out:
+    #     clozedict,inputlist,tgtlist,clozelist = process_rr(args.rr_stim,gen_obj=False,gen_subj=False)
+    #     run_rr_all(args,out,models,'orig',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
+    #
+    # with open(args.resultsdir+'/results-fk.txt','wb') as out:
+    #     hldict,inputlist,_,_,_,tgtlist = process_fk(args.fk_stim)
+    #     _,_,outstring = run_fk_all(args,out,models,'orig',klist,hldict,inputlist,tgtlist,bert=bert)
+    #     out.write(outstring)
 
 
 if __name__ == "__main__":
@@ -634,12 +641,12 @@ if __name__ == "__main__":
     # parser.add_argument("--rr_raw", default=None, type=str)
     parser.add_argument("--fisch_stim", default=None, type=str)
     parser.add_argument("--nk_stim", default=None, type=str)
-    parser.add_argument("--manual",default=None, type=str)
+    # parser.add_argument("--manual",default=None, type=str)
     parser.add_argument("--resultsdir",default=None, type=str)
     parser.add_argument("--bertbase",default=None, type=str)
     parser.add_argument("--bertlarge",default=None, type=str)
-    parser.add_argument("--finetuneddir",default=None, type=str)
-    parser.add_argument("--ftcode",default=None, type=str)
+    # parser.add_argument("--finetuneddir",default=None, type=str)
+    # parser.add_argument("--ftcode",default=None, type=str)
     args = parser.parse_args()
 
 
@@ -660,5 +667,5 @@ if __name__ == "__main__":
     # models = []
 
     print('RUNNING EXPERIMENTS')
-    # run_three_orig(args,models,klist,bert=True)
-    run_aux_tests(args,models,klist,bert=True)
+    run_three_orig(args,models,klist,bert=True)
+    # run_aux_tests(args,models,klist,bert=True)
