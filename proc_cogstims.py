@@ -568,13 +568,13 @@ def run_aux_tests(args,models,klist,bert=True):
     acclists_shufnw = []
     acclists = []
     with open(args.resultsdir+'/results-fk.txt','wb') as out:
-        hldict,inputlist,_,inputlist_nw,_,tgtlist = process_fk(args.fk_stim)
+        hldict,inputlist,_,inputlist_nw,_,tgtlist = process_fk(args.cprag_stim)
         _,_,outstring = run_fk_all(args,out,models,'orig',klist,hldict,inputlist,tgtlist,bert=bert)
         out.write(outstring)
         _,_,outstring = run_fk_all(args,out,models,'nw',klist,hldict,inputlist_nw,tgtlist,bert=bert)
         out.write(outstring)
         for i in range(100):
-            _,_,inputlist_shuf,_,inputlist_shufnw,_ = process_fk(args.fk_stim)
+            _,_,inputlist_shuf,_,inputlist_shufnw,_ = process_fk(args.cprag_stim)
             acclist,acclist_names_shuf,_ = run_fk_all(args,out,models,'shuf',klist,hldict,inputlist_shuf,tgtlist,bert=bert)
             acclists_shuf.append(acclist)
             acclist,acclist_names_shufnw,_ = run_fk_all(args,out,models,'shufnw',klist,hldict,inputlist_shufnw,tgtlist,bert=bert)
@@ -604,47 +604,47 @@ def run_aux_tests(args,models,klist,bert=True):
                 i += 1
 
     with open(args.resultsdir+'/results-rr.txt','wb') as out:
-        clozedict,inputlist,tgtlist,clozelist = process_rr(args.rr_stim,gen_obj=False,gen_subj=False)
+        clozedict,inputlist,tgtlist,clozelist = process_rr(args.role_stim,gen_obj=False,gen_subj=False)
         run_rr_all(args,out,models,'orig',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
-        clozedict,inputlist,tgtlist,clozelist = process_rr(args.rr_stim,gen_obj=True,gen_subj=False)
+        clozedict,inputlist,tgtlist,clozelist = process_rr(args.role_stim,gen_obj=True,gen_subj=False)
         run_rr_all(args,out,models,'obj',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
-        clozedict,inputlist,tgtlist,clozelist = process_rr(args.rr_stim,gen_obj=False,gen_subj=True)
+        clozedict,inputlist,tgtlist,clozelist = process_rr(args.role_stim,gen_obj=False,gen_subj=True)
         run_rr_all(args,out,models,'subj',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
-        clozedict,inputlist,tgtlist,clozelist = process_rr(args.rr_stim,gen_obj=True,gen_subj=True)
+        clozedict,inputlist,tgtlist,clozelist = process_rr(args.role_stim,gen_obj=True,gen_subj=True)
         run_rr_all(args,out,models,'obsub',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
 
     with open(args.resultsdir+'/results-neg.txt','wb') as out:
-        inputlist,negdict,tgtlist = process_fischler(args.fisch_stim)
+        inputlist,negdict,tgtlist = process_fischler(args.negsimp_stim)
         run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,'FISCHLER','FS',bert=bert)
-        inputlist,negdict,tgtlist = process_nk(args.nk_stim)
+        inputlist,negdict,tgtlist = process_nk(args.negnat_stim)
         run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,'NIEUWLAND','NK',bert=bert)
 
 #runs all three datasets without any perturbations from paper
 def run_three_orig(args,models,klist,bert=True):
     with open(args.resultsdir+'/results-neg.txt','wb') as out:
-        inputlist,negdict,tgtlist = process_fischler(args.fisch_stim)
+        inputlist,negdict,tgtlist = process_fischler(args.negsimp_stim)
         run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,'FISCHLER','FS',bert=bert)
-        inputlist,negdict,tgtlist = process_nk(args.nk_stim)
+        inputlist,negdict,tgtlist = process_nk(args.negnat_stim)
         run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,'NIEUWLAND','NK',bert=bert)
 
     with open(args.resultsdir+'/results-rr.txt','wb') as out:
-        clozedict,inputlist,tgtlist,clozelist = process_rr(args.rr_stim,gen_obj=False,gen_subj=False)
+        clozedict,inputlist,tgtlist,clozelist = process_rr(args.role_stim,gen_obj=False,gen_subj=False)
         run_rr_all(args,out,models,'orig',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
 
     with open(args.resultsdir+'/results-fk.txt','wb') as out:
-        hldict,inputlist,_,_,_,tgtlist = process_fk(args.fk_stim)
+        hldict,inputlist,_,_,_,tgtlist = process_fk(args.cprag_stim)
         _,_,outstring = run_fk_all(args,out,models,'orig',klist,hldict,inputlist,tgtlist,bert=bert)
         out.write(outstring)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--fk_stim", default=None, type=str)
+    parser.add_argument("--cprag_stim", default=None, type=str)
     # parser.add_argument("--rr_stim", default=None, type=str, nargs='+')
-    parser.add_argument("--rr_stim", default=None, type=str)
+    parser.add_argument("--role_stim", default=None, type=str)
     # parser.add_argument("--rr_raw", default=None, type=str)
-    parser.add_argument("--fisch_stim", default=None, type=str)
-    parser.add_argument("--nk_stim", default=None, type=str)
+    parser.add_argument("--negsimp_stim", default=None, type=str)
+    parser.add_argument("--negnat_stim", default=None, type=str)
     # parser.add_argument("--manual",default=None, type=str)
     parser.add_argument("--resultsdir",default=None, type=str)
     parser.add_argument("--bertbase",default=None, type=str)
