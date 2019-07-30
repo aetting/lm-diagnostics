@@ -1,0 +1,6 @@
+This is the README for the ROLE-88 dataset. These items come from the Chow et al (2015) study. The authors of this study have kindly provided the cloze data for these items, allowing us to include them here. 
+
+Each row contains the item ID, the context, the expected item, the cloze value of the expected item, the target, the cloze value of the target, and the strict cloze value of the target. 
+
+Expected item is the item (or items) receiving the highest cloze probability for the context.
+Target item is the item use for the sensitivity tests -- **this is the only dataset for which there is a separate "target" category used for sensitivity tests. Usually the target is the same as one of the expected items, but this is not always the case.

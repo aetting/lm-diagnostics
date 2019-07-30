@@ -1,4 +1,4 @@
-item	context_pos	context_neg	target_pos	target_neg
+item	context_aff	context_neg	target_aff	target_neg
 0	A trout is (a|an)	A trout is not (a|an)	fish	tool
 1	A salmon is (a|an)	A salmon is not (a|an)	fish	flower
 2	An ant is (a|an)	An ant is not (a|an)	insect	vegetable

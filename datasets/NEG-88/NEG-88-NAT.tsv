@@ -1,4 +1,4 @@
-item	context_pos	context_neg	target_pos	target_neg	licensing
+item	context_aff	context_neg	target_aff	target_neg	licensing
 0	With proper equipment, scuba-diving is very	With proper equipment, scuba-diving isn't very	safe	dangerous	Y
 1	Traveling in Baghdad is very	Traveling in Baghdad isn't very	dangerous	safe	Y
 2	In moderation, drinking red wine is	In moderation, drinking red wine isn't	good	bad	Y

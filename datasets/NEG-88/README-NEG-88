@@ -1,0 +1,9 @@
+This is the README for the NEG-88 dataset. This dataset contains two subsets of items.
+
+NEG-88-SIMP is from Fischler et al.
+
+NEG-88-NAT is from Nieuwland and Kuperberg. 
+
+There are affirmative and negative versions of each context (context_aff, context_neg), and completions that are true with the affirmative context (target_aff) and with the negative context (target_neg).
+
+For NEG-88-SIMP, determiners are left ambiguous, and need to be selected based on the continuing noun (see example in proc_cogstims.py). 
