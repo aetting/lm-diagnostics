@@ -1,6 +1,6 @@
 # LM diagnostics
 
-This repository contains the diagnostic datasets and experimental code for `What BERT is not`.
+This repository contains the diagnostic datasets and experimental code for 'What BERT is not'.
 
 # Diagnostic test data
 
