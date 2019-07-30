@@ -199,11 +199,15 @@ def test_fk_acc(hldict,inputlist,tgtlist,model,tokenizer,setting,fklog,k=5,bert=
     by_constraint_score['H'] = []
     by_constraint_score['L'] = []
     correct = []
+    used = []
     for i,pr in enumerate(tok_preds):
+        sent = hldict[i]['sent'][setting]
         hldict[i]['toppreds'] = pr
         hldict[i]['tgtprob'] = tok_probs[i]
         hldict[i]['topprobs'] = top_probs[i]
         score = 0
+        if sent in used: continue
+        used.append(sent)
         for subpr in pr:
             for candidate in subpr:
                 if candidate.strip() in hldict[i]['exp']:
@@ -218,7 +222,7 @@ def test_fk_acc(hldict,inputlist,tgtlist,model,tokenizer,setting,fklog,k=5,bert=
     n4report = sim_fk_N400(conddict,fklog,setting,k=k,bert=bert)
     tot_acc = get_acc(tot_score)
     report = '\nPrediction accuracies:\n'
-    report += 'EXP TGT in TOP %s preds: %s\n'%(k,tot_acc)
+    report += 'EXP TGT in TOP %s preds: %s (%s/%s)\n'%(k,tot_acc,sum(tot_score),len(tot_score))
     report += 'in TOP %s for H: %s\n'%(k,get_acc(by_constraint_score['H']))
     report += 'in TOP %s for L: %s\n'%(k,get_acc(by_constraint_score['L']))
     return report,n4report,correct,tot_acc,oov_list
@@ -318,7 +322,7 @@ def test_rr_acc(clozedict,inputlist,tgtlist,clozelist,model,tokenizer,rrlog,k=5,
     conddict = make_conddict(clozedict)
     n4report = sim_rr_N400(conddict,rrlog,scat=scat,k=k,bert=bert)
     report = '\nPrediction accuracies:\n'
-    report += 'TGT in top %s preds: %s\n'%(k,get_acc(tot_score))
+    report += 'TGT in top %s preds: %s (%s/%s)\n'%(k,get_acc(tot_score),sum(tot_score),len(tot_score))
     report += 'TGT in top %s for Q1: %s (%s upper, %s items)\n'%(k,get_acc(correct_by_quartile['q1_corr']),q1,len(correct_by_quartile['q1_corr']))
     report += 'TGT in top %s for Q2: %s (%s upper, %s items)\n'%(k,get_acc(correct_by_quartile['q2_corr']),q2,len(correct_by_quartile['q2_corr']))
     report += 'TGT in top %s for Q3: %s (%s upper, %s items)\n'%(k,get_acc(correct_by_quartile['q3_corr']),q3,len(correct_by_quartile['q3_corr']))
@@ -417,7 +421,7 @@ def test_nkf_acc(nkfdict,inputlist,tgtlist,model,tokenizer,nkflog,k=5,bert=True)
     conddict = make_conddict(nkfdict)
     n4report = sim_nkf_N400(conddict,nkflog,k=k,bert=bert)
     report = "\nPrediction 'accuracy':\n"
-    report += 'TRUE TGT in top %s preds: %s\n'%(k,get_acc(tot_score))
+    report += 'TRUE TGT in top %s preds: %s (%s/%s)\n'%(k,get_acc(tot_score),sum(tot_score),len(tot_score))
 
     return report,n4report,correct,oov_list
 
@@ -623,14 +627,14 @@ def run_three_orig(args,models,klist,bert=True):
         inputlist,negdict,tgtlist = process_nk(args.nk_stim)
         run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,'NIEUWLAND','NK',bert=bert)
 
-    # with open(args.resultsdir+'/results-rr.txt','wb') as out:
-    #     clozedict,inputlist,tgtlist,clozelist = process_rr(args.rr_stim,gen_obj=False,gen_subj=False)
-    #     run_rr_all(args,out,models,'orig',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
-    #
-    # with open(args.resultsdir+'/results-fk.txt','wb') as out:
-    #     hldict,inputlist,_,_,_,tgtlist = process_fk(args.fk_stim)
-    #     _,_,outstring = run_fk_all(args,out,models,'orig',klist,hldict,inputlist,tgtlist,bert=bert)
-    #     out.write(outstring)
+    with open(args.resultsdir+'/results-rr.txt','wb') as out:
+        clozedict,inputlist,tgtlist,clozelist = process_rr(args.rr_stim,gen_obj=False,gen_subj=False)
+        run_rr_all(args,out,models,'orig',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
+
+    with open(args.resultsdir+'/results-fk.txt','wb') as out:
+        hldict,inputlist,_,_,_,tgtlist = process_fk(args.fk_stim)
+        _,_,outstring = run_fk_all(args,out,models,'orig',klist,hldict,inputlist,tgtlist,bert=bert)
+        out.write(outstring)
 
 
 if __name__ == "__main__":
