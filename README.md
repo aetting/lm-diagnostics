@@ -19,9 +19,10 @@ python proc_cogstims.py \
   --negsimp_stim $bertdir/features/fischler_stims-clean.tsv \
   --resultsdir $bertdir/results \
   --bertbase $bertdir/params/bert-base-uncased \
-  --bertlarge $bertdir/params/bert-large-uncased
-
+  --bertlarge $bertdir/params/bert-large-uncased \
+  --incl_perturb
 ```
 
 * `resultsdir` is the location results files and log files will write to
-* `bertbase` and `bertlarge` is the location of pytorch parameters and vocab file for BERT<sub>BASE</sub> and BERT<sub>LARGE</sub> models
+* `bertbase` and `bertlarge` specify locations for PyTorch BERT<sub>BASE</sub> and BERT<sub>LARGE</sub> models -- each folder is expcted to include vocab.txt, bert_config.json, and pytorch_model.bin for the corresponding BERT model.
+* `incl_perturb` runs experiments with all perturbations reported in the paper. Without this flag, only runs experiments without perturbations.
