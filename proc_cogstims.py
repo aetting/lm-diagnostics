@@ -573,7 +573,7 @@ def run_aux_tests(args,models,klist,bert=True):
         out.write(outstring)
         _,_,outstring = run_fk_all(args,out,models,'nw',klist,hldict,inputlist_nw,tgtlist,bert=bert)
         out.write(outstring)
-        for i in range(100):
+        for i in range(3):
             _,_,inputlist_shuf,_,inputlist_shufnw,_ = process_fk(args.cprag_stim)
             acclist,acclist_names_shuf,_ = run_fk_all(args,out,models,'shuf',klist,hldict,inputlist_shuf,tgtlist,bert=bert)
             acclists_shuf.append(acclist)
@@ -640,24 +640,16 @@ def run_three_orig(args,models,klist,bert=True):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--cprag_stim", default=None, type=str)
-    # parser.add_argument("--rr_stim", default=None, type=str, nargs='+')
     parser.add_argument("--role_stim", default=None, type=str)
-    # parser.add_argument("--rr_raw", default=None, type=str)
     parser.add_argument("--negsimp_stim", default=None, type=str)
     parser.add_argument("--negnat_stim", default=None, type=str)
-    # parser.add_argument("--manual",default=None, type=str)
     parser.add_argument("--resultsdir",default=None, type=str)
     parser.add_argument("--bertbase",default=None, type=str)
     parser.add_argument("--bertlarge",default=None, type=str)
-    # parser.add_argument("--finetuneddir",default=None, type=str)
-    # parser.add_argument("--ftcode",default=None, type=str)
+    parser.add_argument("--incl_perturb", action="store_true")
     args = parser.parse_args()
 
 
-    # main(args)
-
-    # model,tokenizer = tp.load_modelGPT()
-    # bert = False
 
     print('LOADING MODELS')
     bert_base,tokenizer_base = tp.load_model(args.bertbase)
@@ -667,9 +659,9 @@ if __name__ == "__main__":
     klist = [1,5]
 
     models = [('bert-base-uncased',bert_base,tokenizer_base),('bert-large-uncased',bert_large,tokenizer_large)]
-    # models = [('bert-base-uncased',bert_base,tokenizer_base)]
-    # models = []
 
     print('RUNNING EXPERIMENTS')
-    run_three_orig(args,models,klist,bert=True)
-    # run_aux_tests(args,models,klist,bert=True)
+    if args.incl_perturb:
+        run_aux_tests(args,models,klist,bert=True)
+    else:
+        run_three_orig(args,models,klist,bert=True)
