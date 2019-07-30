@@ -2,7 +2,7 @@
 
 This repository contains the diagnostic datasets and experimental code for `What BERT is not`.
 
-#Diagnostic test data
+# Diagnostic test data
 
 The `datasets` folder contains TSV files with data for each diagnostic test, along with explanatory README files for each dataset.
 
