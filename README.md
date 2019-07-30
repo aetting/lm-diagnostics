@@ -23,8 +23,5 @@ python proc_cogstims.py \
 
 ```
 
-* `setname` is used in naming the output files and will also be used in sentence IDs
-* `setdir` specifies the location to write the output files
-* `configfile` specifies the config file, described in more detail below
-* `mpo` specifies the maximum number of sentences to be generated for a given structural category
-* `adv` you can also include this option with an integer argument, in which case the system will insert a variable number of adverbs before verbs (as long as your vocabulary includes adverbs), with the integer specifying the maximum number of adverbs to precede a given verb
+* `resultsdir` is the location results files and log files will write to
+* `bertbase` and `bertlarge` is the location of pytorch parameters and vocab file for BERT<sub>BASE</sub> and BERT<sub>LARGE</sub> models
