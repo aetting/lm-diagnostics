@@ -573,7 +573,7 @@ def run_aux_tests(args,models,klist,bert=True):
         out.write(outstring)
         _,_,outstring = run_fk_all(args,out,models,'trunc',klist,hldict,inputlist_nw,tgtlist,bert=bert)
         out.write(outstring)
-        for i in range(3):
+        for i in range(100):
             _,_,inputlist_shuf,_,inputlist_shufnw,_ = process_fk(args.cprag_stim)
             acclist,acclist_names_shuf,_ = run_fk_all(args,out,models,'shuf',klist,hldict,inputlist_shuf,tgtlist,bert=bert)
             acclists_shuf.append(acclist)
