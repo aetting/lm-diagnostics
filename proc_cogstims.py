@@ -4,7 +4,7 @@ import argparse
 import random
 import copy
 import numpy as np
-import test_pyt as tp
+import access_model as tp
 import scipy
 import scipy.stats
 from io import open
