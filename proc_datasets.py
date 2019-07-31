@@ -155,21 +155,3 @@ if __name__ == "__main__":
             out.write('\n'.join([c.encode('utf-8') for c in inputlist]))
         with open(args.model_inputs+'/%s-completiontlist'%out_pref,'wb') as out:
             out.write('\n'.join(tgtlist))
-
-    # inputlist,tgtlist,_ = process_role(args.role_stim)
-    # with open(args.model_inputs+'/role-contextlist','wb') as out:
-    #     out.write('\n'.join(inputlist))
-    # with open(args.model_inputs+'/role-completiontlist','wb') as out:
-    #     out.write('\n'.join(targetlist))
-    #
-    # inputlist,tgtlist,_ = process_negsimp(args.negsimp_stim)
-    # with open(args.model_inputs+'/negsimp-contextlist','wb') as out:
-    #     out.write('\n'.join(inputlist))
-    # with open(args.model_inputs+'/negsimp-completiontlist','wb') as out:
-    #     out.write('\n'.join(targetlist))
-    #
-    # inputlist,tgtlist,_ = process_negnat(args.negnat_stim)
-    # with open(args.model_inputs+'/negnat-contextlist','wb') as out:
-    #     out.write('\n'.join(inputlist))
-    # with open(args.model_inputs+'/negnat-completiontlist','wb') as out:
-    #     out.write('\n'.join(targetlist))
