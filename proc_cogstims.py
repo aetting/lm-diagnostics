@@ -49,8 +49,8 @@ def process_fk(infile):
                 hldict[i]['sent'] = {}
                 hldict[i]['sent']['orig'] = origsent
                 hldict[i]['sent']['shuf'] = shuf
-                hldict[i]['sent']['nw'] = nw
-                hldict[i]['sent']['shufnw'] = shufnw
+                hldict[i]['sent']['trunc'] = nw
+                hldict[i]['sent']['shuftrunc'] = shufnw
                 hldict[i]['item'] = it
                 hldict[i]['exp'] = [exp]
                 hldict[i]['cond'] = cond
@@ -567,22 +567,22 @@ def run_aux_tests(args,models,klist,bert=True):
     acclists_shuf = []
     acclists_shufnw = []
     acclists = []
-    with open(args.resultsdir+'/results-fk.txt','wb') as out:
+    with open(args.resultsdir+'/results-cprag.txt','wb') as out:
         hldict,inputlist,_,inputlist_nw,_,tgtlist = process_fk(args.cprag_stim)
         _,_,outstring = run_fk_all(args,out,models,'orig',klist,hldict,inputlist,tgtlist,bert=bert)
         out.write(outstring)
-        _,_,outstring = run_fk_all(args,out,models,'nw',klist,hldict,inputlist_nw,tgtlist,bert=bert)
+        _,_,outstring = run_fk_all(args,out,models,'trunc',klist,hldict,inputlist_nw,tgtlist,bert=bert)
         out.write(outstring)
         for i in range(3):
             _,_,inputlist_shuf,_,inputlist_shufnw,_ = process_fk(args.cprag_stim)
             acclist,acclist_names_shuf,_ = run_fk_all(args,out,models,'shuf',klist,hldict,inputlist_shuf,tgtlist,bert=bert)
             acclists_shuf.append(acclist)
-            acclist,acclist_names_shufnw,_ = run_fk_all(args,out,models,'shufnw',klist,hldict,inputlist_shufnw,tgtlist,bert=bert)
+            acclist,acclist_names_shufnw,_ = run_fk_all(args,out,models,'shuftrunc',klist,hldict,inputlist_shufnw,tgtlist,bert=bert)
             acclists_shufnw.append(acclist)
         out.write('\n\nSHUF ACCLISTS')
         out.write(str(acclist_names_shuf) + '\n')
         out.write(str(acclists_shuf))
-        out.write('\n\nSHUFNW ACCLISTS')
+        out.write('\n\nSHUF-TRUNC ACCLISTS')
         out.write(str(acclist_names_shufnw) + '\n')
         out.write(str(acclists_shufnw))
 
@@ -594,7 +594,7 @@ def run_aux_tests(args,models,klist,bert=True):
                 this_accs = accs_by_modk[i]
                 out.write('%s k=%s: %s pm %s\n'%(modelname,k,np.average(this_accs),np.std(this_accs)))
                 i += 1
-        out.write('\n\nSHUF-NW ACCURACIES\n')
+        out.write('\n\nSHUF-TRUNC ACCURACIES\n')
         accs_by_modk = zip(*acclists_shufnw)
         i = 0
         for modelname,_,_ in models:
@@ -603,15 +603,15 @@ def run_aux_tests(args,models,klist,bert=True):
                 out.write('%s k=%s: %s pm %s\n'%(modelname,k,np.average(this_accs),np.std(this_accs)))
                 i += 1
 
-    with open(args.resultsdir+'/results-rr.txt','wb') as out:
+    with open(args.resultsdir+'/results-role.txt','wb') as out:
         clozedict,inputlist,tgtlist,clozelist = process_rr(args.role_stim,gen_obj=False,gen_subj=False)
         run_rr_all(args,out,models,'orig',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
         clozedict,inputlist,tgtlist,clozelist = process_rr(args.role_stim,gen_obj=True,gen_subj=False)
-        run_rr_all(args,out,models,'obj',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
+        run_rr_all(args,out,models,'-obj',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
         clozedict,inputlist,tgtlist,clozelist = process_rr(args.role_stim,gen_obj=False,gen_subj=True)
-        run_rr_all(args,out,models,'subj',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
+        run_rr_all(args,out,models,'-subj',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
         clozedict,inputlist,tgtlist,clozelist = process_rr(args.role_stim,gen_obj=True,gen_subj=True)
-        run_rr_all(args,out,models,'obsub',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
+        run_rr_all(args,out,models,'-obsub',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
 
     with open(args.resultsdir+'/results-neg.txt','wb') as out:
         inputlist,negdict,tgtlist = process_fischler(args.negsimp_stim)
@@ -627,11 +627,11 @@ def run_three_orig(args,models,klist,bert=True):
         inputlist,negdict,tgtlist = process_nk(args.negnat_stim)
         run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,'NIEUWLAND','NK',bert=bert)
 
-    with open(args.resultsdir+'/results-rr.txt','wb') as out:
+    with open(args.resultsdir+'/results-role.txt','wb') as out:
         clozedict,inputlist,tgtlist,clozelist = process_rr(args.role_stim,gen_obj=False,gen_subj=False)
         run_rr_all(args,out,models,'orig',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
 
-    with open(args.resultsdir+'/results-fk.txt','wb') as out:
+    with open(args.resultsdir+'/results-cprag.txt','wb') as out:
         hldict,inputlist,_,_,_,tgtlist = process_fk(args.cprag_stim)
         _,_,outstring = run_fk_all(args,out,models,'orig',klist,hldict,inputlist,tgtlist,bert=bert)
         out.write(outstring)
