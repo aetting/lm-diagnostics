@@ -6,6 +6,8 @@ This repository contains the diagnostic datasets and experimental code for 'What
 
 The `datasets` folder contains TSV files with data for each diagnostic test, along with explanatory README files for each dataset.
 
+(Dataset-specific README files are still in progress.)
+
 # Experimental code
 
 The code provided was used for reading in datasets, retrieving word predictions and probabilities from BERT<sub>BASE</sub> and BERT<sub>LARGE</sub>, and performing the relevant calculations for the experiments reported in the paper. `run_aux_tests` also runs the experiments with the various perturbations.
