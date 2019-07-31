@@ -553,15 +553,6 @@ def run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,dataname,logcode
         out.write(n4)
         out.write('\n----\n\n')
 
-def run_weight_mixing():
-    ftcode = args.ftcode
-    model2,tokenizer2 = tp.mix_weights(args.pretraineddir,args.finetuneddir)
-
-    models = [
-    ('pretrained',model1,tokenizer1),
-    ('mixed-%s'%ftcode,model2,tokenizer2),
-    ]
-
 #runs all three datasets WITH all additional perturbations tried in the paper
 def run_aux_tests(args,models,klist,bert=True):
     acclists_shuf = []
