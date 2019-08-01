@@ -7,5 +7,5 @@ The TSV file contains for each item tge item ID, the context, the expected item 
 The expected word is the word (or words) that received the highest cloze probability for the context.
 The target word is the word used for the sensitivity tests. (This is the only dataset for which there is a separate "target" category used for sensitivity tests. Usually the target is the same as one of the expected items, as in the other datasets, but for a few items they are different.)
 
-Reference:
-Wing-Yee Chow, Cybelle Smith, Ellen Lau, and Colin Phillips. 2016. A ‘bag-of-arguments’ mechanism for initial verb predictions.
+**Reference**:
+* Wing-Yee Chow, Cybelle Smith, Ellen Lau, and Colin Phillips. 2016. A ‘bag-of-arguments’ mechanism for initial verb predictions.

@@ -9,5 +9,5 @@ Constraint level indicates High or Low constraint bin, based on the cloze of the
 
 The CPRAG-explanations.tsv file contains explanations of the commonsense/pragmatic inference involved in predicting the correct words in this set.
 
-Reference:
-Kara D Federmeier and Marta Kutas. 1999. A rose by any other name: Long-term memory structure and sentence processing.
+**Reference**:
+* Kara D Federmeier and Marta Kutas. 1999. A rose by any other name: Long-term memory structure and sentence processing.
