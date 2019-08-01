@@ -11,7 +11,6 @@ from pytorch_pretrained_bert import OpenAIGPTTokenizer, OpenAIGPTModel, OpenAIGP
 def load_model(modeldir):
     # Load pre-trained model tokenizer (vocabulary)
     tokenizer = BertTokenizer.from_pretrained(modeldir)
-
     # Load pre-trained model (weights)
     model = BertForMaskedLM.from_pretrained(modeldir)
     model.eval()
@@ -33,10 +32,8 @@ def prep_input(input_sents, tokenizer,bert=True):
         if bert: text.append('[SEP]')
         text = ' '.join(text)
         tokenized_text = tokenizer.tokenize(text)
-        # print(tokenized_text)
         for i,tok in enumerate(tokenized_text):
             if tok == mtok: masked_index = i
-        # masked_index = [i for i,tok in enumerate(tokenized_text) if tok == mtok]
         indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)
         tokens_tensor = torch.tensor([indexed_tokens])
         yield tokens_tensor, masked_index,tokenized_text
@@ -51,8 +48,6 @@ def get_predictions(input_sents,model,tokenizer,k=5,bert=True):
             predictions = model(tokens_tensor)
         predicted_tokens = []
         predicted_token_probs = []
-        # print(predictions.size())
-        # for mi in masked_index:
         if bert:
             softpred = torch.softmax(predictions[0,mi],0)
         else:
@@ -62,8 +57,6 @@ def get_predictions(input_sents,model,tokenizer,k=5,bert=True):
         top_tok_preds = tokenizer.convert_ids_to_tokens(top_inds)
         if not bert:
             top_tok_preds = [re.sub('\<\/w\>','',e) for e in top_tok_preds]
-        # predicted_tokens.append(top_tok_preds)
-        # predicted_token_probs.append(top_probs)
 
         token_preds.append(top_tok_preds)
         tok_probs.append(top_probs)
@@ -76,9 +69,7 @@ def get_probabilities(input_sents,tgtlist,model,tokenizer,bert=True):
 
         with torch.no_grad():
             predictions = model(tokens_tensor)
-        # pred_tuple = []
         tgt = tgtlist[i]
-        # for mi in masked_index:
         if bert:
             softpred = torch.softmax(predictions[0,mi],0)
         else:
@@ -89,7 +80,6 @@ def get_probabilities(input_sents,tgtlist,model,tokenizer,bert=True):
             this_tgt_prob = np.nan
         else:
             this_tgt_prob = softpred[tgt_ind].item()
-        # pred_tuple.append(this_tgt_prob)
         token_probs.append(this_tgt_prob)
     return token_probs
 
