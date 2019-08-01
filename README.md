@@ -6,8 +6,6 @@ This repository contains the diagnostic datasets and experimental code for *What
 
 The `datasets` folder contains TSV files with data for each diagnostic test, along with explanatory README files for each dataset.
 
-(Dataset-specific README files are still in progress.)
-
 # Code
 
 The code in this section can be used to process the diagnostic datasets for input to a language model, and then to run the diagnostic tests on that language model's predictions. The code should be used in three steps:
