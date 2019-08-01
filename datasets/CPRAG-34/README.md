@@ -10,4 +10,4 @@ The `CPRAG-34.tsv` file contains for each item the item ID, the context, three c
 The `CPRAG-explanations.tsv` file contains explanations of the commonsense/pragmatic inference involved in predicting the correct words in this set.
 
 **Reference**:
-* Kara D Federmeier and Marta Kutas. 1999. A rose by any other name: Long-term memory structure and sentence processing.
+* Kara D Federmeier and Marta Kutas. 1999. *A rose by any other name: Long-term memory structure and sentence processing.*
