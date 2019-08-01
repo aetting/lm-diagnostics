@@ -30,5 +30,5 @@ python proc_cogstims.py \
 ```
 
 * `resultsdir` is the location that experiment results and logs of word predictions will write to
-* `bertbase` and `bertlarge` specify locations for PyTorch BERT<sub>BASE</sub> and BERT<sub>LARGE</sub> models -- each folder is expected to include `vocab.txt`, `bert_config.json`, and `pytorch_model.bin` for the corresponding PyTorch BERT model. (Note that experiments were run with the original pytorch-pretrained-bert version, so I can't guarantee identical results with the updated pytorch-transformers.)
+* `bertbase` and `bertlarge` specify locations for PyTorch BERT<sub>BASE</sub> and BERT<sub>LARGE</sub> models -- each folder is expected to include `vocab.txt`, `bert_config.json`, and `pytorch_model.bin` for the corresponding [PyTorch BERT](https://github.com/huggingface/pytorch-transformers) model. (Note that experiments were run with the original pytorch-pretrained-bert version, so I can't guarantee identical results with the updated pytorch-transformers.)
 * `incl_perturb` runs experiments with all perturbations reported in the paper. Without this flag, only runs experiments without perturbations.
