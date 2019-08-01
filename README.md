@@ -1,6 +1,6 @@
 # LM diagnostics
 
-This repository contains the diagnostic datasets and experimental code for 'What BERT is not'.
+This repository contains the diagnostic datasets and experimental code for 'What BERT is not: Lessons from a new suite of psycholinguistic diagnostics for language models', by Allyson Ettinger.
 
 # Diagnostic test data
 
@@ -16,7 +16,7 @@ The `datasets` folder contains TSV files with data for each diagnostic test, alo
 
 `proc_cogstims.py` is the code that was used for the experiments on BERT<sub>BASE</sub> and BERT<sub>LARGE</sub> reported in the paper, including perturbations.
 
-Example usage
+Example usage:
 ```
 python proc_cogstims.py \
   --cprag_stim $bertdir/features/FKstims-BV-clean.tsv \
