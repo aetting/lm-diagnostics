@@ -10,11 +10,9 @@ The `datasets` folder contains TSV files with data for each diagnostic test, alo
 
 # Code
 
-## Data processing and diagnostic test code, for use with arbitrary language models
+The code in this section can be used to process the datasets for input to a language model, and to run the diagnostic tests on that language model's predictions. It should be used in three steps:
 
-The code in this section can be used to process the datasets for input to a language model, and to run the diagnostic tests on that language model's predictions.
-
-### 1) Process datasets to produce inputs for LM
+### Step 1) Process datasets to produce inputs for LM
 
 `proc_datasets.py` can be used to process the provided datasets into 1) `<testname>-contextlist` files containing contexts (one per line) on which the LM's predictions should be conditioned, and b) `<testname>-targetlist` files containing target words (one per line, aligned with the contexts in `*-contextlist`) for which you will need probabilities conditioned on the corresponding contexts. Repeats in `*-contextlist` are intentional, to align with the targets in `*-targetlist`.
 
@@ -31,7 +29,7 @@ python proc_datasets.py \
 * `add_mask_tok` flag will append '[MASK]' to the contexts in `*-contextlist`, for use with BERT.
 * `<testname>` comes from the following list: *cprag*, *role*, *negsimp*, *negnat* for CPRAG-34, ROLE-88, NEG-88-SIMP and NEG-88-NAT, respectively.
 
-### 2) Get LM predictions/probabilities
+### Step 2) Get LM predictions/probabilities
 
 You will need to produce two files: one containing top word predictions conditioned on each context, and one containing the probabilities for each target word conditioned on its corresponding context.
 
@@ -41,7 +39,7 @@ You will need to produce two files: one containing top word predictions conditio
 
 * `<testname>` list is as above. `<modelname>` should be the name of the model that will be input to the code in Step 3.
 
-### 3) Run accuracy and sensitivity tests for each diagnostic
+### Step 3) Run accuracy and sensitivity tests for each diagnostic
 
 `prediction_accuracy_tests.py` takes `modelpreds-<testname>-<modelname>` as input and runs word prediction accuracy tests.
 
