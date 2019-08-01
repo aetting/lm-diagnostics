@@ -106,8 +106,8 @@ def test_neg_acc(dataset_ref,word_preds,k=5):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("preddir",default=None, type=str)
-    parser.add_argument("resultsdir",default=None, type=str)
+    parser.add_argument("--preddir",default=None, type=str)
+    parser.add_argument("--resultsdir",default=None, type=str)
     parser.add_argument("--models", nargs="+", type=str)
     parser.add_argument("--k_values", nargs="+", type=int)
     parser.add_argument("--cprag_stim", default=None, type=str)

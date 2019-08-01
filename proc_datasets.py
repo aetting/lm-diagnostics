@@ -153,7 +153,7 @@ def get_acc(scorelist):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("outputdir",default=None, type=str)
+    parser.add_argument("--outputdir",default=None, type=str)
     parser.add_argument("--cprag_stim", default=None, type=str)
     parser.add_argument("--role_stim", default=None, type=str)
     parser.add_argument("--negsimp_stim", default=None, type=str)
@@ -173,5 +173,5 @@ if __name__ == "__main__":
         inputlist,tgtlist,_ = process_func(stimfile,mask_tok=args.add_mask_tok)
         with open(args.outputdir+'/%s-contextlist'%out_pref,'wb') as out:
             out.write('\n'.join([c.encode('utf-8') for c in inputlist]))
-        with open(args.outputdir+'/%s-completionlist'%out_pref,'wb') as out:
+        with open(args.outputdir+'/%s-targetlist'%out_pref,'wb') as out:
             out.write('\n'.join(tgtlist))

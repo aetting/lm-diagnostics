@@ -141,8 +141,8 @@ def neg_sensitivity_test(dataset_ref,target_probs):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("preddir",default=None, type=str)
-    parser.add_argument("resultsdir",default=None, type=str)
+    parser.add_argument("--probdir",default=None, type=str)
+    parser.add_argument("--resultsdir",default=None, type=str)
     parser.add_argument("--models", nargs="+", type=str)
     parser.add_argument("--cprag_stim", default=None, type=str)
     parser.add_argument("--role_stim", default=None, type=str)
@@ -164,7 +164,7 @@ if __name__ == "__main__":
             for modelname in args.models:
                 out.write('\n\n***\nMODEL: %s\n***\n'%modelname)
                 target_probs = []
-                with open(os.path.join(args.preddir,'modeltgtprobs-%s-%s'%(testname,modelname))) as probfile:
+                with open(os.path.join(args.probdir,'modeltgtprobs-%s-%s'%(testname,modelname))) as probfile:
                     for line in probfile: target_probs.append(float(line.strip()))
                 report = sens_test(dataset_ref,target_probs)
                 out.write(report)

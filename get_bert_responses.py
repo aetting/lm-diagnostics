@@ -40,7 +40,7 @@ if __name__ == "__main__":
         tgtlist = []
         with open(os.path.join(args.inputdir,testname+'-contextlist')) as cont:
             for line in cont: inputlist.append(line.strip())
-        with open(os.path.join(args.inputdir,testname+'-completionlist')) as comp:
+        with open(os.path.join(args.inputdir,testname+'-targetlist')) as comp:
             for line in comp: tgtlist.append(line.strip())
 
         for modelname,model,tokenizer in models:
