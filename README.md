@@ -8,9 +8,13 @@ The `datasets` folder contains TSV files with data for each diagnostic test, alo
 
 (Dataset-specific README files are still in progress.)
 
-# Experimental code
+# Code
 
-The code provided was used for reading in datasets, retrieving word predictions and probabilities from BERT<sub>BASE</sub> and BERT<sub>LARGE</sub>, and performing the relevant calculations for the experiments reported in the paper. `run_aux_tests` also runs the experiments with the various perturbations.
+**Coming soon: code to facilitate running diagnostics on arbitrary language models.**
+
+## Experimental code
+
+`proc_cogstims.py` is the code that was used for the experiments on BERT<sub>BASE</sub> and BERT<sub>LARGE</sub> reported in the paper, including perturbations.
 
 Example usage
 ```
