@@ -75,7 +75,7 @@ python sensitivity_tests.py \
 
 Example usage:
 ```
-python proc_cogstims.py \
+python run_diagnostics_bert.py \
   --cprag_stim datasets/CPRAG-34/CPRAG-34.tsv \
   --role_stim datasets/ROLE-88/ROLE-88.tsv \
   --negnat_stim datasets/NEG-88/NEG-88-NAT.tsv \

@@ -193,7 +193,7 @@ def get_acc(scorelist):
 
 def test_fk_acc(hldict,inputlist,tgtlist,model,tokenizer,setting,fklog,k=5,bert=True):
     tok_preds,top_probs = tp.get_predictions(inputlist,model,tokenizer,k=k,bert=bert)
-    tok_probs,oov_list = tp.get_probabilities(inputlist,tgtlist,model,tokenizer,bert=bert)
+    tok_probs = tp.get_probabilities(inputlist,tgtlist,model,tokenizer,bert=bert)
     tot_score = []
     by_constraint_score = {}
     by_constraint_score['H'] = []
@@ -224,7 +224,7 @@ def test_fk_acc(hldict,inputlist,tgtlist,model,tokenizer,setting,fklog,k=5,bert=
     report += 'EXP TGT in TOP %s preds: %s (%s/%s)\n'%(k,tot_acc,sum(tot_score),len(tot_score))
     report += 'in TOP %s for H: %s\n'%(k,get_acc(by_constraint_score['H']))
     report += 'in TOP %s for L: %s\n'%(k,get_acc(by_constraint_score['L']))
-    return report,n4report,correct,tot_acc,oov_list
+    return report,n4report,correct,tot_acc
 
 def sim_fk_N400(conddict,logfile,setting,k=5,bert=True):
     thresh = 0.01
@@ -279,7 +279,7 @@ def sim_fk_N400(conddict,logfile,setting,k=5,bert=True):
 
 def test_rr_acc(clozedict,inputlist,tgtlist,clozelist,model,tokenizer,rrlog,k=5,bert=True,scat=None):
     tok_preds,top_probs = tp.get_predictions(inputlist,model,tokenizer,k=k,bert=bert)
-    tok_probs,oov_list = tp.get_probabilities(inputlist,tgtlist,model,tokenizer,bert=bert)
+    tok_probs = tp.get_probabilities(inputlist,tgtlist,model,tokenizer,bert=bert)
     tot_score = []
     correct = []
     correct_by_quartile = {'q1_corr':[],'q2_corr':[],'q3_corr':[],'q4_corr':[]}
@@ -322,7 +322,7 @@ def test_rr_acc(clozedict,inputlist,tgtlist,clozelist,model,tokenizer,rrlog,k=5,
     report += 'TGT in top %s for Q4: %s (%s upper, %s items)\n'%(k,get_acc(correct_by_quartile['q4_corr']),q4,len(correct_by_quartile['q4_corr']))
     report += 'AVG CLOZE: %s\n'%avgcloze
     report += 'MED CLOZE: %s\n'%q2
-    return report,n4report,correct,predcounts,oov_list
+    return report,n4report,correct,predcounts
 
 def sim_rr_N400(conddict,logfile,scat=None,k=5,bert=True):
     thresh = .01
@@ -394,7 +394,7 @@ def test_nkf_acc(nkfdict,inputlist,tgtlist,model,tokenizer,nkflog,k=5,bert=True)
     correct = []
     tot_score = []
     tok_preds,top_probs = tp.get_predictions(inputlist,model,tokenizer,k=k,bert=bert)
-    tok_probs,oov_list = tp.get_probabilities(inputlist,tgtlist,model,tokenizer,bert=bert)
+    tok_probs = tp.get_probabilities(inputlist,tgtlist,model,tokenizer,bert=bert)
     for i,pred in enumerate(tok_preds):
         nkfdict[i]['toppreds'] = pred
         nkfdict[i]['tgtprob'] = tok_probs[i]
@@ -414,7 +414,7 @@ def test_nkf_acc(nkfdict,inputlist,tgtlist,model,tokenizer,nkflog,k=5,bert=True)
     report = "\nPrediction 'accuracy':\n"
     report += 'TRUE TGT in top %s preds: %s (%s/%s)\n'%(k,get_acc(tot_score),sum(tot_score),len(tot_score))
 
-    return report,n4report,correct,oov_list
+    return report,n4report,correct
 
 def sim_nkf_N400(conddict,logfile,k=5,bert=True):
     pattern = []
@@ -485,7 +485,7 @@ def run_fk_all(args,out,models,logcode,klist,hldict,inputlist,tgtlist,bert=True)
         reports = []
         for k in klist:
             with open(os.path.join(args.resultsdir,'FK-%s_predlog_%s-%s'%(logcode,modelname,k)),'wb') as fklog:
-                report,n4report,corr,acc,oov_list = test_fk_acc(hldict,inputlist,tgtlist,model,tokenizer,logcode,fklog,k=k,bert=bert)
+                report,n4report,corr,acc = test_fk_acc(hldict,inputlist,tgtlist,model,tokenizer,logcode,fklog,k=k,bert=bert)
                 acclist.append(acc)
                 acclist_names.append(modelname + '-%s'%k)
                 for crritem in corr:
@@ -509,7 +509,7 @@ def run_rr_all(args,out,models,logcode,klist,clozedict,inputlist,tgtlist,clozeli
             with open(os.path.join(args.resultsdir,'RR-%s_predlog_%s-%s'%(logcode,modelname,k)),'wb') as rrlog:
                 print('CHOW k=%s'%k)
                 # n4report = sim_rr_N400(clozedict,inputlist,tgtlist,model,tokenizer,rrlog,scat=os.path.join(args.resultsdir,'prcl-%s'%modelname),k=k,bert=bert)
-                report,n4report,corr,prcounts,oov_list = test_rr_acc(clozedict,inputlist,tgtlist,clozelist,model,tokenizer,rrlog,k=k,bert=bert)
+                report,n4report,corr,prcounts = test_rr_acc(clozedict,inputlist,tgtlist,clozelist,model,tokenizer,rrlog,k=k,bert=bert)
                 for crritem in corr:
                     rrlog.write(str(crritem) + '\n')
                 rrlog.write('\n'+ str(prcounts))
@@ -532,7 +532,7 @@ def run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,dataname,logcode
         reports = []
         for k in klist:
             with open(args.resultsdir+'/%s_predlog_%s-%s'%(logcode,modelname,k),'wb') as nkflog:
-                report,n4report,corr,oov_list = test_nkf_acc(negdict,inputlist,tgtlist,model,tokenizer,nkflog,k=k,bert=bert)
+                report,n4report,corr = test_nkf_acc(negdict,inputlist,tgtlist,model,tokenizer,nkflog,k=k,bert=bert)
                 # n4report = sim_nkf_N400(fsdict,inputlist,tgtlist,model,tokenizer,fslog,k=k,bert=bert)
                 for crritem in corr:
                     nkflog.write(str(crritem) + '\n')
