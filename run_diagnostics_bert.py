@@ -208,10 +208,9 @@ def test_fk_acc(hldict,inputlist,tgtlist,model,tokenizer,setting,fklog,k=5,bert=
         score = 0
         if sent in used: continue
         used.append(sent)
-        for subpr in pr:
-            for candidate in subpr:
-                if candidate.strip() in hldict[i]['exp']:
-                    score = 1
+        for candidate in pr:
+            if candidate.strip() in hldict[i]['exp']:
+                score = 1
         if score == 1:
             ctup = (hldict[i]['sent'][setting],hldict[i]['exp'],pr,hldict[i]['constraint'])
             if ctup not in correct:
@@ -234,7 +233,7 @@ def sim_fk_N400(conddict,logfile,setting,k=5,bert=True):
     wc_boost = {'H':[],'L':[]}
     allprobs = {'H':[],'L':[]}
     for it in conddict:
-        exp_prob,wc_prob,bc_prob = [conddict[it][cont]['tgtprob'][0] for cont in ['exp','wc','bc']]
+        exp_prob,wc_prob,bc_prob = [conddict[it][cont]['tgtprob'] for cont in ['exp','wc','bc']]
         logfile.write(conddict[it]['exp']['sent'][setting].encode('utf-8'))
         logfile.write(' ' + '/'.join([conddict[it][cont]['tgt'] for cont in ['exp','wc','bc']]) + '\n')
         logfile.write('TGT probs: %s\n'%[exp_prob,wc_prob,bc_prob])
@@ -284,10 +283,6 @@ def test_rr_acc(clozedict,inputlist,tgtlist,clozelist,model,tokenizer,rrlog,k=5,
     tot_score = []
     correct = []
     correct_by_quartile = {'q1_corr':[],'q2_corr':[],'q3_corr':[],'q4_corr':[]}
-    # q1_corr = []
-    # q2_corr = []
-    # q3_corr = []
-    # q4_corr = []
     avgcloze = np.average(clozelist)
     q1 = np.percentile(clozelist,25)
     q3 = np.percentile(clozelist,75)
@@ -301,11 +296,9 @@ def test_rr_acc(clozedict,inputlist,tgtlist,clozelist,model,tokenizer,rrlog,k=5,
         score = 0
         itm = clozedict[i]['item']
         cond = clozedict[i]['cond']
-        for subpr in pred:
-            predcounts.update(subpr)
-            for candidate in subpr:
-                if candidate.strip() in [e.split()[0] for e in clozedict[i]['exp']]:
-                    score = 1
+        for candidate in pred:
+            if candidate.strip() in [e.split()[0] for e in clozedict[i]['exp']]:
+                score = 1
         if score == 1:
             ctup = (clozedict[i]['sent'],clozedict[i]['exp'],pred,clozedict[i]['maxcloze'])
             if ctup not in correct:
@@ -339,7 +332,7 @@ def sim_rr_N400(conddict,logfile,scat=None,k=5,bert=True):
     probpairs = []
     clozepairs = []
     for it in conddict:
-        a_prob,b_prob = (conddict[it]['a']['tgtprob'][0],conddict[it]['b']['tgtprob'][0])
+        a_prob,b_prob = (conddict[it]['a']['tgtprob'],conddict[it]['b']['tgtprob'])
         logfile.write(conddict[it]['a']['sent'] + '   ' + conddict[it]['a']['tgt'] + '\n')
         logfile.write(conddict[it]['b']['sent'] + '   ' + conddict[it]['b']['tgt'] + '\n')
         logfile.write('TGT probs: %s\n'%[a_prob,b_prob])
@@ -407,11 +400,9 @@ def test_nkf_acc(nkfdict,inputlist,tgtlist,model,tokenizer,nkflog,k=5,bert=True)
         nkfdict[i]['tgtprob'] = tok_probs[i]
         nkfdict[i]['topprobs'] = top_probs[i]
         score = 0
-        for subpr in pred:
-            rawclozevals = []
-            for candidate in subpr:
-                if candidate.strip() in nkfdict[i]['exp']:
-                    score = 1
+        for candidate in pred:
+            if candidate.strip() in nkfdict[i]['exp']:
+                score = 1
         if score == 1:
             ctup = (nkfdict[i]['sent'],nkfdict[i]['exp'],pred,nkfdict[i]['cond'])
             if ctup not in correct:
@@ -438,7 +429,7 @@ def sim_nkf_N400(conddict,logfile,k=5,bert=True):
         if 'licensing' in conddict[it]['TA']:
             lic = conddict[it]['TA']['licensing']
         for true_cond,false_cond,pol in [('TA','FA','aff'),('TN','FN','neg')]:
-            true_prob,false_prob = (conddict[it][true_cond]['tgtprob'][0],conddict[it][false_cond]['tgtprob'][0])
+            true_prob,false_prob = (conddict[it][true_cond]['tgtprob'],conddict[it][false_cond]['tgtprob'])
             logfile.write(str(conddict[it][true_cond]['sent'] + ' ' + conddict[it][true_cond]['tgt']) + '\n')
             logfile.write(str(conddict[it][false_cond]['sent'] + ' ' + conddict[it][false_cond]['tgt']) + '\n')
             logfile.write(u'TGT probs: %s\n'%[true_prob,false_prob])
