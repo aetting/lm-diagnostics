@@ -71,7 +71,7 @@ python sensitivity_tests.py \
 
 ## Experimental code
 
-`proc_cogstims.py` is the code that was used for the experiments on BERT<sub>BASE</sub> and BERT<sub>LARGE</sub> reported in the paper, including perturbations.
+`run_diagnostics_bert.py` is the code that was used for the experiments on BERT<sub>BASE</sub> and BERT<sub>LARGE</sub> reported in the paper, including perturbations.
 
 Example usage:
 ```
