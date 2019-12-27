@@ -8,6 +8,8 @@ The `datasets` folder contains TSV files with data for each diagnostic test, alo
 
 # Code
 
+[All code is now designed to be run in Python 3.]
+
 The code in this section can be used to process the diagnostic datasets for input to a language model, and then to run the diagnostic tests on that language model's predictions. The code should be used in three steps:
 
 ### Step 1: Process datasets to produce inputs for LM

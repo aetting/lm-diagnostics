@@ -63,7 +63,7 @@ def process_rr(csvfile,gen_obj=False,gen_subj=False):
     clozedict = {}
     clozelist = []
     i = 0
-    with open(csvfile,'rU') as f:
+    with open(csvfile,'r') as f:
         for line in f:
             linesplit = line.strip().split('\t')
             item = linesplit[0]
@@ -109,7 +109,7 @@ def process_fischler(infile):
     it = 0
     i = 0
     csvclean = []
-    with open(infile,'rU') as f:
+    with open(infile,'r') as f:
         for line in f:
             it,affsent,negsent,afftgt,negtgt = [e.strip() for e in line.strip().split('\t')]
             affsent = re.sub(' \(.+\)','',affsent)
@@ -139,7 +139,7 @@ def process_nk(infile):
     tgtlist = []
     it = 0
     i = 0
-    with open(infile,'rU') as f:
+    with open(infile,'r') as f:
         for line in f:
             it,affsent,negsent,afftgt,negtgt,lic = [e.strip() for e in line.strip().split('\t')]
             if it == 'item': continue
@@ -234,7 +234,8 @@ def sim_fk_N400(conddict,logfile,setting,k=5,bert=True):
     allprobs = {'H':[],'L':[]}
     for it in conddict:
         exp_prob,wc_prob,bc_prob = [conddict[it][cont]['tgtprob'] for cont in ['exp','wc','bc']]
-        logfile.write(conddict[it]['exp']['sent'][setting].encode('utf-8'))
+        # logfile.write(conddict[it]['exp']['sent'][setting].encode('utf-8'))
+        logfile.write(conddict[it]['exp']['sent'][setting])
         logfile.write(' ' + '/'.join([conddict[it][cont]['tgt'] for cont in ['exp','wc','bc']]) + '\n')
         logfile.write('TGT probs: %s\n'%[exp_prob,wc_prob,bc_prob])
         logfile.write('PREDICTED: %s\n'%conddict[it]['exp']['toppreds'])
@@ -484,7 +485,7 @@ def run_fk_all(args,out,models,logcode,klist,hldict,inputlist,tgtlist,bert=True)
         print(modelname)
         reports = []
         for k in klist:
-            with open(os.path.join(args.resultsdir,'FK-%s_predlog_%s-%s'%(logcode,modelname,k)),'wb') as fklog:
+            with open(os.path.join(args.resultsdir,'FK-%s_predlog_%s-%s'%(logcode,modelname,k)),'w') as fklog:
                 report,n4report,corr,acc = test_fk_acc(hldict,inputlist,tgtlist,model,tokenizer,logcode,fklog,k=k,bert=bert)
                 acclist.append(acc)
                 acclist_names.append(modelname + '-%s'%k)
@@ -506,9 +507,8 @@ def run_rr_all(args,out,models,logcode,klist,clozedict,inputlist,tgtlist,clozeli
         out.write('\n\n***\nMODEL: %s\n***\n'%modelname)
         reports = []
         for k in klist:
-            with open(os.path.join(args.resultsdir,'RR-%s_predlog_%s-%s'%(logcode,modelname,k)),'wb') as rrlog:
+            with open(os.path.join(args.resultsdir,'RR-%s_predlog_%s-%s'%(logcode,modelname,k)),'w') as rrlog:
                 print('CHOW k=%s'%k)
-                # n4report = sim_rr_N400(clozedict,inputlist,tgtlist,model,tokenizer,rrlog,scat=os.path.join(args.resultsdir,'prcl-%s'%modelname),k=k,bert=bert)
                 report,n4report,corr,prcounts = test_rr_acc(clozedict,inputlist,tgtlist,clozelist,model,tokenizer,rrlog,k=k,bert=bert)
                 for crritem in corr:
                     rrlog.write(str(crritem) + '\n')
@@ -531,9 +531,8 @@ def run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,dataname,logcode
         print(modelname)
         reports = []
         for k in klist:
-            with open(args.resultsdir+'/%s_predlog_%s-%s'%(logcode,modelname,k),'wb') as nkflog:
+            with open(args.resultsdir+'/%s_predlog_%s-%s'%(logcode,modelname,k),'w') as nkflog:
                 report,n4report,corr = test_nkf_acc(negdict,inputlist,tgtlist,model,tokenizer,nkflog,k=k,bert=bert)
-                # n4report = sim_nkf_N400(fsdict,inputlist,tgtlist,model,tokenizer,fslog,k=k,bert=bert)
                 for crritem in corr:
                     nkflog.write(str(crritem) + '\n')
                 reports.append((report,n4report,k))
@@ -549,7 +548,7 @@ def run_aux_tests(args,models,klist,bert=True):
     acclists_shuf = []
     acclists_shufnw = []
     acclists = []
-    with open(args.resultsdir+'/results-cprag.txt','wb') as out:
+    with open(args.resultsdir+'/results-cprag.txt','w') as out:
         hldict,inputlist,_,inputlist_nw,_,tgtlist = process_fk(args.cprag_stim)
         _,_,outstring = run_fk_all(args,out,models,'orig',klist,hldict,inputlist,tgtlist,bert=bert)
         out.write(outstring)
@@ -569,7 +568,7 @@ def run_aux_tests(args,models,klist,bert=True):
         out.write(str(acclists_shufnw))
 
         out.write('\n\nSHUF ACCURACIES\n')
-        accs_by_modk = zip(*acclists_shuf)
+        accs_by_modk = list(zip(*acclists_shuf))
         i = 0
         for modelname,_,_ in models:
             for k in klist:
@@ -577,7 +576,7 @@ def run_aux_tests(args,models,klist,bert=True):
                 out.write('%s k=%s: %s pm %s\n'%(modelname,k,np.average(this_accs),np.std(this_accs)))
                 i += 1
         out.write('\n\nSHUF-TRUNC ACCURACIES\n')
-        accs_by_modk = zip(*acclists_shufnw)
+        accs_by_modk = list(zip(*acclists_shufnw))
         i = 0
         for modelname,_,_ in models:
             for k in klist:
@@ -585,7 +584,7 @@ def run_aux_tests(args,models,klist,bert=True):
                 out.write('%s k=%s: %s pm %s\n'%(modelname,k,np.average(this_accs),np.std(this_accs)))
                 i += 1
 
-    with open(args.resultsdir+'/results-role.txt','wb') as out:
+    with open(args.resultsdir+'/results-role.txt','w') as out:
         clozedict,inputlist,tgtlist,clozelist = process_rr(args.role_stim,gen_obj=False,gen_subj=False)
         run_rr_all(args,out,models,'orig',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
         clozedict,inputlist,tgtlist,clozelist = process_rr(args.role_stim,gen_obj=True,gen_subj=False)
@@ -595,7 +594,7 @@ def run_aux_tests(args,models,klist,bert=True):
         clozedict,inputlist,tgtlist,clozelist = process_rr(args.role_stim,gen_obj=True,gen_subj=True)
         run_rr_all(args,out,models,'-obsub',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
 
-    with open(args.resultsdir+'/results-neg.txt','wb') as out:
+    with open(args.resultsdir+'/results-neg.txt','w') as out:
         inputlist,negdict,tgtlist = process_fischler(args.negsimp_stim)
         run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,'FISCHLER','FS',bert=bert)
         inputlist,negdict,tgtlist = process_nk(args.negnat_stim)
@@ -603,17 +602,17 @@ def run_aux_tests(args,models,klist,bert=True):
 
 #runs all three datasets without any perturbations from paper
 def run_three_orig(args,models,klist,bert=True):
-    with open(args.resultsdir+'/results-neg.txt','wb') as out:
+    with open(args.resultsdir+'/results-neg.txt','w') as out:
         inputlist,negdict,tgtlist = process_fischler(args.negsimp_stim)
         run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,'FISCHLER','FS',bert=bert)
         inputlist,negdict,tgtlist = process_nk(args.negnat_stim)
         run_neg_all(args,out,models,klist,inputlist,negdict,tgtlist,'NIEUWLAND','NK',bert=bert)
 
-    with open(args.resultsdir+'/results-role.txt','wb') as out:
+    with open(args.resultsdir+'/results-role.txt','w') as out:
         clozedict,inputlist,tgtlist,clozelist = process_rr(args.role_stim,gen_obj=False,gen_subj=False)
         run_rr_all(args,out,models,'orig',klist,clozedict,inputlist,tgtlist,clozelist,bert=bert)
 
-    with open(args.resultsdir+'/results-cprag.txt','wb') as out:
+    with open(args.resultsdir+'/results-cprag.txt','w') as out:
         hldict,inputlist,_,_,_,tgtlist = process_fk(args.cprag_stim)
         _,_,outstring = run_fk_all(args,out,models,'orig',klist,hldict,inputlist,tgtlist,bert=bert)
         out.write(outstring)
