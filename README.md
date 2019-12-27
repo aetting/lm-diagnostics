@@ -81,8 +81,8 @@ python run_diagnostics_bert.py \
   --negnat_stim datasets/NEG-88/NEG-88-NAT.tsv \
   --negsimp_stim datasets/NEG-88/NEG-88-SIMP.tsv \
   --resultsdir <location for results files> \
-  --bertbase \<BERT<sub>BASE</sub> location\> \
-  --bertlarge \<BERT<sub>LARGE</sub> location\> \
+  --bertbase <BERT BASE location> \
+  --bertlarge <BERT LARGE location> \
   --incl_perturb
 ```
 
