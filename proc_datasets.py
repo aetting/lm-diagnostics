@@ -40,7 +40,7 @@ def process_role(tsvfile,mask_tok=True,gen_obj=False,gen_subj=False):
     clozedict = {}
     clozelist = []
     i = 0
-    with open(tsvfile,'rU') as f:
+    with open(tsvfile,'r') as f:
         for line in f:
             linesplit = line.strip().split('\t')
             item = linesplit[0]
@@ -88,7 +88,7 @@ def process_negsimp(tsvfile,mask_tok=True):
     tgtlist = []
     i = 0
     csvclean = []
-    with open(tsvfile,'rU') as f:
+    with open(tsvfile,'r') as f:
         for line in f:
             it,affsent,negsent,afftgt,negtgt = [e.strip() for e in line.strip().split('\t')]
             affsent = re.sub(' \(.+\)','',affsent)
@@ -120,7 +120,7 @@ def process_negnat(tsvfile,mask_tok=True):
     inputlist = []
     tgtlist = []
     i = 0
-    with open(tsvfile,'rU') as f:
+    with open(tsvfile,'r') as f:
         for line in f:
             it,affsent,negsent,afftgt,negtgt,lic = [e.strip() for e in line.strip().split('\t')]
             if it == 'item': continue
@@ -171,7 +171,7 @@ if __name__ == "__main__":
     for stimfile,process_func,out_pref in testlist:
         if not stimfile: continue
         inputlist,tgtlist,_ = process_func(stimfile,mask_tok=args.add_mask_tok)
-        with open(args.outputdir+'/%s-contextlist'%out_pref,'wb') as out:
-            out.write('\n'.join([c.encode('utf-8') for c in inputlist]))
-        with open(args.outputdir+'/%s-targetlist'%out_pref,'wb') as out:
+        with open(args.outputdir+'/%s-contextlist'%out_pref,'w') as out:
+            out.write('\n'.join(inputlist))
+        with open(args.outputdir+'/%s-targetlist'%out_pref,'w') as out:
             out.write('\n'.join(tgtlist))

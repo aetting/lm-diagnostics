@@ -32,8 +32,8 @@ def test_cprag_acc(dataset_ref,word_preds,k=5):
     report += 'EXPECTED TARGET in TOP %s predictions: %s (%s/%s)\n\n'%(k,tot_acc,sum(tot_score),len(tot_score))
     report += 'ITEMS PREDICTED CORRECTLY:\n\n'
     for sent,exp,pred in correct:
-        report += sent.encode('utf-8')
-        report += '\n   EXPECTED: %s | PREDICTED: %s\n'%(','.join(exp).encode('utf-8'),','.join(pred).encode('utf-8'))
+        report += sent
+        report += '\n   EXPECTED: %s | PREDICTED: %s\n'%(','.join(exp),','.join(pred))
     return report
 
 def test_role_acc(dataset_ref,word_preds,k=5):
@@ -126,7 +126,7 @@ if __name__ == "__main__":
     for stimfile,acc_test,testname,process_func in testlist:
         if not stimfile: continue
         inputlist,_,dataset_ref = process_func(stimfile,mask_tok=False)
-        with open(args.resultsdir+'/prediction_accuracy-%s.txt'%testname,'wb') as out:
+        with open(args.resultsdir+'/prediction_accuracy-%s.txt'%testname,'w') as out:
             for modelname in args.models:
                 out.write('\n\n***\nMODEL: %s\n***\n'%modelname)
                 word_preds_full = []

@@ -46,12 +46,12 @@ if __name__ == "__main__":
         for modelname,model,tokenizer in models:
             top_preds,top_probs,tgt_probs = get_model_responses(inputlist,tgtlist,modelname,model,tokenizer,k=k)
 
-            with open(args.inputdir+'/modelpreds-%s-%s'%(testname,modelname),'wb') as pred_out:
+            with open(args.inputdir+'/modelpreds-%s-%s'%(testname,modelname),'w') as pred_out:
                 for i,preds in enumerate(top_preds):
                     pred_out.write(' '.join(preds))
                     pred_out.write('\n')
 
-            with open(args.inputdir+'/modeltgtprobs-%s-%s'%(testname,modelname),'wb') as prob_out:
+            with open(args.inputdir+'/modeltgtprobs-%s-%s'%(testname,modelname),'w') as prob_out:
                 for i,prob in enumerate(tgt_probs):
                     prob_out.write(str(prob))
                     prob_out.write('\n')

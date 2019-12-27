@@ -160,7 +160,7 @@ if __name__ == "__main__":
     for stimfile,sens_test,testname,process_func in testlist:
         if not stimfile: continue
         inputlist,_,dataset_ref = process_func(stimfile,mask_tok=False)
-        with open(args.resultsdir+'/sensitivity-%s.txt'%testname,'wb') as out:
+        with open(args.resultsdir+'/sensitivity-%s.txt'%testname,'w') as out:
             for modelname in args.models:
                 out.write('\n\n***\nMODEL: %s\n***\n'%modelname)
                 target_probs = []
