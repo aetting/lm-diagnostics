@@ -234,7 +234,6 @@ def sim_fk_N400(conddict,logfile,setting,k=5,bert=True):
     allprobs = {'H':[],'L':[]}
     for it in conddict:
         exp_prob,wc_prob,bc_prob = [conddict[it][cont]['tgtprob'] for cont in ['exp','wc','bc']]
-        # logfile.write(conddict[it]['exp']['sent'][setting].encode('utf-8'))
         logfile.write(conddict[it]['exp']['sent'][setting])
         logfile.write(' ' + '/'.join([conddict[it][cont]['tgt'] for cont in ['exp','wc','bc']]) + '\n')
         logfile.write('TGT probs: %s\n'%[exp_prob,wc_prob,bc_prob])
@@ -554,7 +553,7 @@ def run_aux_tests(args,models,klist,bert=True):
         out.write(outstring)
         _,_,outstring = run_fk_all(args,out,models,'trunc',klist,hldict,inputlist_nw,tgtlist,bert=bert)
         out.write(outstring)
-        for i in range(100):
+        for i in range(3):
             _,_,inputlist_shuf,_,inputlist_shufnw,_ = process_fk(args.cprag_stim)
             acclist,acclist_names_shuf,_ = run_fk_all(args,out,models,'shuf',klist,hldict,inputlist_shuf,tgtlist,bert=bert)
             acclists_shuf.append(acclist)
