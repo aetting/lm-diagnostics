@@ -91,8 +91,6 @@ python run_diagnostics_bert.py \
 * `bertbase` and `bertlarge` specify locations for PyTorch BERT<sub>BASE</sub> and BERT<sub>LARGE</sub> models -- each folder is expected to include `vocab.txt`, `bert_config.json`, and `pytorch_model.bin` for the corresponding [PyTorch BERT](https://github.com/huggingface/pytorch-transformers) model. (Note that experiments were run with the original pytorch-pretrained-bert version, so I can't guarantee identical results with the updated pytorch-transformers.)
 * `incl_perturb` runs experiments with all perturbations reported in the paper. Without this flag, only runs experiments without perturbations.
 
-## License
 
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
 
 
