@@ -90,3 +90,13 @@ python run_diagnostics_bert.py \
 
 * `bertbase` and `bertlarge` specify locations for PyTorch BERT<sub>BASE</sub> and BERT<sub>LARGE</sub> models -- each folder is expected to include `vocab.txt`, `bert_config.json`, and `pytorch_model.bin` for the corresponding [PyTorch BERT](https://github.com/huggingface/pytorch-transformers) model. (Note that experiments were run with the original pytorch-pretrained-bert version, so I can't guarantee identical results with the updated pytorch-transformers.)
 * `incl_perturb` runs experiments with all perturbations reported in the paper. Without this flag, only runs experiments without perturbations.
+
+## License
+
+Copyright 2020 Allyson Ettinger
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
