@@ -1,6 +1,6 @@
-CPRAG-34 items come from Federmeier and Kutas (1999).
+CPRAG-102 items come from Federmeier and Kutas (1999).
 
-The `CPRAG-34.tsv` file contains for each item the item ID, the context, three completion words, and the constraint category according to the original Federmeier & Kutas paper.
+The `CPRAG-102.tsv` file contains for each item the item ID, the context, three completion words, and the constraint category according to the original Federmeier & Kutas paper.
 
 * "expected" completions are the highest cloze.
 * "within_category" completions are approximately zero cloze but share a close semantic category with the expected word (e.g., sports).
